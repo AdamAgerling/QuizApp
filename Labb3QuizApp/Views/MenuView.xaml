@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="Labb3QuizApp.Views.MenuView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Labb3QuizApp.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_New Question Pack" />
+                    <MenuItem Header="_Select Question Pack">
+                        <MenuItem Header="Option 1"/>
+                    </MenuItem>
+                    <MenuItem Header="_Delete Question Pack" IsEnabled="False"/>
+                    <MenuItem Header="_Import Questions" />
+                    <MenuItem Header="_Exit" />
+                    
+                </MenuItem>
+                <MenuItem Header="_Edit">
+                    <MenuItem Header="_Add Question"  />
+                    <MenuItem Header="_Remove Question"  IsEnabled="False"/>
+                    <MenuItem Header="_Pack Options"  />
+                </MenuItem>
+                <MenuItem Header="_View">
+                    <MenuItem Header="_Play" IsEnabled="False"/>
+                    <MenuItem Header="_Edit"  IsEnabled="False"/>
+                    <MenuItem Header="_Fullscreen"/>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
+    </Grid>
+</UserControl>
