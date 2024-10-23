@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:local="clr-namespace:Labb3QuizApp.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -11,25 +12,48 @@
             <Menu DockPanel.Dock="Top">
                
                 <MenuItem Header="_File">
-                    <MenuItem Header="_New Question Pack" />
-                    <MenuItem Header="_Select Question Pack">
-                        <MenuItem Header="Option 1"/>
+
+                    <MenuItem Header="_New Question Pack"  Icon="{fa:Icon folderPlus}" />
+                    <Separator />
+
+                    <MenuItem Header="_Select Question Pack"  Icon="{fa:Icon folderOpen}">
+                        <MenuItem  Header="Option 1"/>
                     </MenuItem>
-                    <MenuItem Header="_Delete Question Pack" IsEnabled="False"/>
-                    <MenuItem Header="_Import Questions" />
-                    <MenuItem Header="_Exit" />
+                    
+                    <MenuItem Header="_Delete Question Pack" 
+                              IsEnabled="False" 
+                              Icon="{fa:Icon folderMinus}" />
+                    
+                    <MenuItem Header="_Import Questions" 
+                              Icon="{fa:Icon cloudArrowDown}" 
+                              InputGestureText="Ctrl+I" />
+                    
+                    <MenuItem Header="E_xit" 
+                              Icon="{fa:Icon doorOpen}" 
+                              InputGestureText="Alt+F4"/>
                 </MenuItem>
                 
                 <MenuItem Header="_Edit">
-                    <MenuItem Header="_Add Question"  />
-                    <MenuItem Header="_Remove Question"  IsEnabled="False"/>
-                    <MenuItem Header="_Pack Options"  />
+                    <MenuItem Header="_Add Question" Icon="{fa:Icon plus, Foreground=Green}" />
+                    <MenuItem Header="_Remove Question"  IsEnabled="False" Icon="{fa:Icon minus, Foreground=Red}" />
+                    <MenuItem Header="_Pack Options" Icon="{fa:Icon gear}" />
                 </MenuItem>
                 
                 <MenuItem Header="_View">
-                    <MenuItem Header="_Play" IsEnabled="False"/>
-                    <MenuItem Header="_Edit"  IsEnabled="False"/>
-                    <MenuItem Header="_Fullscreen"/>
+                    
+                    <MenuItem Header="_Play"
+                              IsEnabled="False"
+                              Icon="{fa:Icon play, Foreground=Green}"
+                              InputGestureText="Ctrl+P"/>
+                    
+                    <MenuItem Header="_Edit"
+                              IsEnabled="False"
+                              Icon="{fa:Icon penToSquare}" 
+                              InputGestureText="Ctrl+E"/>
+                    
+                    <MenuItem Header="_Fullscreen" 
+                              Icon="{fa:Icon expand}" 
+                              InputGestureText="Alt+Enter"/>
                 </MenuItem>
                 
             </Menu>

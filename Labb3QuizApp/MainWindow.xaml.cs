@@ -1,5 +1,4 @@
-﻿using Labb3QuizApp.Model;
-using Labb3QuizApp.ViewModel;
+﻿using Labb3QuizApp.ViewModel;
 using System.Windows;
 
 namespace Labb3QuizApp
@@ -11,8 +10,7 @@ namespace Labb3QuizApp
         {
             InitializeComponent();
 
-            var questionPack = new QuestionPackViewModel(new QuestionPack("My Question Paack"));
-
+            DataContext = new MainWindowViewModel();
         }
     }
 }

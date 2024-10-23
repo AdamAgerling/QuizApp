@@ -16,7 +16,7 @@
         <!--Timer-->
         <WrapPanel HorizontalAlignment="Right" Margin="10">
         <TextBlock FontSize="30" Text="Timer: " />
-        <TextBlock FontSize="30" Text="30" />
+            <TextBlock FontSize="30" Text="{Binding ActivePack.TimeLimitInSeconds}" />
         </WrapPanel>
         
         <!--Play Question Panel-->
