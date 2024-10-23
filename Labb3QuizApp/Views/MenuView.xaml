@@ -9,6 +9,7 @@
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
+               
                 <MenuItem Header="_File">
                     <MenuItem Header="_New Question Pack" />
                     <MenuItem Header="_Select Question Pack">
@@ -17,18 +18,20 @@
                     <MenuItem Header="_Delete Question Pack" IsEnabled="False"/>
                     <MenuItem Header="_Import Questions" />
                     <MenuItem Header="_Exit" />
-                    
                 </MenuItem>
+                
                 <MenuItem Header="_Edit">
                     <MenuItem Header="_Add Question"  />
                     <MenuItem Header="_Remove Question"  IsEnabled="False"/>
                     <MenuItem Header="_Pack Options"  />
                 </MenuItem>
+                
                 <MenuItem Header="_View">
                     <MenuItem Header="_Play" IsEnabled="False"/>
                     <MenuItem Header="_Edit"  IsEnabled="False"/>
                     <MenuItem Header="_Fullscreen"/>
                 </MenuItem>
+                
             </Menu>
         </DockPanel>
     </Grid>

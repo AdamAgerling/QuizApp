@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using Labb3QuizApp.Model;
+using Labb3QuizApp.ViewModel;
+using System.Windows;
 
 namespace Labb3QuizApp
 {
@@ -8,6 +10,9 @@ namespace Labb3QuizApp
         public MainWindow()
         {
             InitializeComponent();
+
+            var questionPack = new QuestionPackViewModel(new QuestionPack("My Question Paack"));
+
         }
     }
 }
