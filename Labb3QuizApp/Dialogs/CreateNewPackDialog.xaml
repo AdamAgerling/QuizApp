@@ -5,8 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Labb3QuizApp.Dialogs"
         mc:Ignorable="d"
-        Title="CreateNewPackDialog" Height="450" Width="800">
+        Title="Create New Question Pack" Height="250" Width="225" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
         
+        <StackPanel Margin="10 10">
+            <TextBlock Text="Pack Name:" Margin="1 0 0 2" FontWeight="Bold"/>
+            <TextBox Text="{}"/>
+
+        </StackPanel>
+        <StackPanel Margin="10 0 " Grid.Row="1"> 
+            <TextBlock Text="Difficulty:" FontWeight="Bold" Margin="0 10 0 5" />
+            <ComboBox ItemsSource="{Binding QuestionPack.Difficulty}"/>
+        </StackPanel>
+        
+        <StackPanel Margin="10 0" Grid.Row="2">
+            <TextBlock Text="Time Limit:" FontWeight="Bold" Margin="0 10 0 0"/>
+            <Slider />
+        </StackPanel>
+
+        <WrapPanel Margin="0 15" Grid.Row="3" HorizontalAlignment="Center">
+            <Button Content="Cancel" Margin="0 0 30 0" Padding="5 0"/>
+            <Button Content="Create" Padding="5 0"/>
+        </WrapPanel>
+    
     </Grid>
 </Window>

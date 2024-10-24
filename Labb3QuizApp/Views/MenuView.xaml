@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:local="clr-namespace:Labb3QuizApp.Views"
+             DataContext="{Binding MenuViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -14,7 +15,8 @@
                 <MenuItem Header="_File">
 
                     <MenuItem Header="_New Question Pack"  
-                              Icon="{fa:Icon folderPlus}" />
+                              Icon="{fa:Icon folderPlus}"
+                              Command="{Binding OpenCreateNewPack}"/>
                     <Separator />
 
                     <MenuItem Header="_Select Question Pack"  
@@ -46,7 +48,8 @@
                               Icon="{fa:Icon minus, Foreground=Red}" />
 
                     <MenuItem Header="_Pack Options" 
-                              Icon="{fa:Icon gear}" />
+                              Icon="{fa:Icon gear}" 
+                              Command="{Binding ConfigurationViewModel.OpenPackOptions}"/>
                 </MenuItem>
 
                 <MenuItem Header="_View">
