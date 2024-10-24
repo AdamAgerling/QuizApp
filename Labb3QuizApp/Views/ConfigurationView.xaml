@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:local="clr-namespace:Labb3QuizApp.Views"
+             DataContext="{Binding ConfigurationViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="0 20 0 0">
@@ -28,17 +29,17 @@
                 <WrapPanel HorizontalAlignment="Right">
 
 
-                    <Button Margin="5 5 10 5" ToolTip="Pack Options">
+                    <Button Margin="5 5 10 5" ToolTip="Pack Options" Command="{Binding OpenPackOptions}">
                         <Button.Content>
                             <fa:IconBlock Icon="gear"/>
                         </Button.Content>
                     </Button>
-                    <Button Margin="0 5 10 5" ToolTip="Add Question">
+                    <Button Margin="0 5 10 5" ToolTip="Add Question" Command="">
                         <Button.Content>
                             <fa:IconBlock Icon="plus"/>
                         </Button.Content>
                     </Button>
-                    <Button  Margin="0 5 5 5">
+                    <Button  Margin="0 5 5 5" Command="">
                         <Button.Content>
                             <fa:IconBlock Icon="minus" ToolTip="Remove Question"/>
                         </Button.Content>

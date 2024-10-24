@@ -6,6 +6,10 @@
         xmlns:views="clr-namespace:Labb3QuizApp.Views"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="450" MinWidth="700">
+    <Window.InputBindings>
+        <KeyBinding Key="F4" Modifiers="Alt" Command=""/>
+    </Window.InputBindings>
+    
     <Grid>
         <!--<Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

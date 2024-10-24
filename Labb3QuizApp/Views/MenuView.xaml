@@ -10,52 +10,62 @@
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
-               
+
                 <MenuItem Header="_File">
 
-                    <MenuItem Header="_New Question Pack"  Icon="{fa:Icon folderPlus}" />
+                    <MenuItem Header="_New Question Pack"  
+                              Icon="{fa:Icon folderPlus}" />
                     <Separator />
 
-                    <MenuItem Header="_Select Question Pack"  Icon="{fa:Icon folderOpen}">
+                    <MenuItem Header="_Select Question Pack"  
+                              Icon="{fa:Icon folderOpen}">
+
                         <MenuItem  Header="Option 1"/>
                     </MenuItem>
-                    
+
                     <MenuItem Header="_Delete Question Pack" 
                               IsEnabled="False" 
                               Icon="{fa:Icon folderMinus}" />
-                    
+
                     <MenuItem Header="_Import Questions" 
                               Icon="{fa:Icon cloudArrowDown}" 
                               InputGestureText="Ctrl+I" />
-                    
+
                     <MenuItem Header="E_xit" 
                               Icon="{fa:Icon doorOpen}" 
                               InputGestureText="Alt+F4"/>
                 </MenuItem>
-                
+
                 <MenuItem Header="_Edit">
-                    <MenuItem Header="_Add Question" Icon="{fa:Icon plus, Foreground=Green}" />
-                    <MenuItem Header="_Remove Question"  IsEnabled="False" Icon="{fa:Icon minus, Foreground=Red}" />
-                    <MenuItem Header="_Pack Options" Icon="{fa:Icon gear}" />
+
+                    <MenuItem Header="_Add Question" 
+                              Icon="{fa:Icon plus, Foreground=Green}" />
+
+                    <MenuItem Header="_Remove Question"  
+                              Command=""
+                              Icon="{fa:Icon minus, Foreground=Red}" />
+
+                    <MenuItem Header="_Pack Options" 
+                              Icon="{fa:Icon gear}" />
                 </MenuItem>
-                
+
                 <MenuItem Header="_View">
-                    
+
                     <MenuItem Header="_Play"
                               IsEnabled="False"
                               Icon="{fa:Icon play, Foreground=Green}"
                               InputGestureText="Ctrl+P"/>
-                    
+
                     <MenuItem Header="_Edit"
                               IsEnabled="False"
                               Icon="{fa:Icon penToSquare}" 
                               InputGestureText="Ctrl+E"/>
-                    
+
                     <MenuItem Header="_Fullscreen" 
                               Icon="{fa:Icon expand}" 
                               InputGestureText="Alt+Enter"/>
                 </MenuItem>
-                
+
             </Menu>
         </DockPanel>
     </Grid>

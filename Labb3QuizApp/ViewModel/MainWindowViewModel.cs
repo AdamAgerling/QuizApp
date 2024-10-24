@@ -21,6 +21,7 @@ namespace Labb3QuizApp.ViewModel
             {
                 _activePack = value;
                 RaisePropertyChanged();
+                ConfigurationViewModel.RaisePropertyChanged("ActivePack");
             }
         }
         public MainWindowViewModel()
