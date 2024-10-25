@@ -15,7 +15,5 @@
             TimeLimitInSeconds = timeLimitInSeconds;
             Questions = new List<Question>();
         }
-
-
     }
 }

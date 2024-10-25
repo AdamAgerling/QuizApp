@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:local="clr-namespace:Labb3QuizApp.Views"
-             DataContext="{Binding MenuViewModel}"
+             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -16,7 +16,7 @@
 
                     <MenuItem Header="_New Question Pack"  
                               Icon="{fa:Icon folderPlus}"
-                              Command="{Binding OpenCreateNewPack}"/>
+                              Command="{Binding MenuViewModel.OpenCreateNewPack}"/>
                     <Separator />
 
                     <MenuItem Header="_Select Question Pack"  
@@ -27,7 +27,8 @@
 
                     <MenuItem Header="_Delete Question Pack" 
                               IsEnabled="False" 
-                              Icon="{fa:Icon folderMinus}" />
+                              Icon="{fa:Icon folderMinus}" 
+                              Command=""/>
 
                     <MenuItem Header="_Import Questions" 
                               Icon="{fa:Icon cloudArrowDown}" 
@@ -41,15 +42,16 @@
                 <MenuItem Header="_Edit">
 
                     <MenuItem Header="_Add Question" 
-                              Icon="{fa:Icon plus, Foreground=Green}" />
+                              Icon="{fa:Icon plus, Foreground=Green}" 
+                              Command="{Binding ConfigurationViewModel.AddQuestion}" />
 
-                    <MenuItem Header="_Remove Question"  
-                              Command=""
-                              Icon="{fa:Icon minus, Foreground=Red}" />
+                    <MenuItem Header="_Remove Question"                                
+                              Icon="{fa:Icon minus, Foreground=Red}" 
+                              Command="{Binding ConfigurationViewModel.RemoveQuestion}"/>
 
                     <MenuItem Header="_Pack Options" 
                               Icon="{fa:Icon gear}" 
-                              Command="{Binding ConfigurationViewModel.OpenPackOptions}"/>
+                              Command="{Binding MenuViewModel.OpenPackOptions}"/>
                 </MenuItem>
 
                 <MenuItem Header="_View">

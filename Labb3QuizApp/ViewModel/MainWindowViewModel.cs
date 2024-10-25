@@ -21,13 +21,16 @@ namespace Labb3QuizApp.ViewModel
             {
                 _activePack = value;
                 RaisePropertyChanged();
-                ConfigurationViewModel.RaisePropertyChanged("ActivePack");
+                if (_activePack != null)
+                {
+                    RaisePropertyChanged(nameof(ActivePack.Questions));
+                }
             }
         }
         public MainWindowViewModel()
         {
             MenuViewModel = new MenuViewModel(this);
-            ConfigurationViewModel = new ConfigurationViewModel(this);
+            ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel);
             PlayerViewModel = new PlayerViewModel(this);
             ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack"));
         }

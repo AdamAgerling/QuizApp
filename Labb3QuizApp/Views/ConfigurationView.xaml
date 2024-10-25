@@ -4,10 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:local="clr-namespace:Labb3QuizApp.Views"
+             xmlns:local="clr-namespace:Labb3QuizApp.Views" xmlns:converters="clr-namespace:Labb3QuizApp.Converters"
              DataContext="{Binding ConfigurationViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    </UserControl.Resources>
+    
     <Grid Margin="0 20 0 0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -28,18 +32,18 @@
                 <TextBlock Text="{Binding ActivePack.Name}" FontWeight="Bold" VerticalAlignment="Center" Margin="10 0 0 0"/>
                 <WrapPanel HorizontalAlignment="Right">
 
-
-                    <Button Margin="5 5 10 5" ToolTip="Pack Options" Command="{Binding OpenPackOptions}">
+                <!--Various UI Buttons-->
+                    <Button Margin="5 5 10 5" ToolTip="Pack Options" Command="{Binding MenuViewModel.OpenPackOptions}">
                         <Button.Content>
                             <fa:IconBlock Icon="gear"/>
                         </Button.Content>
                     </Button>
-                    <Button Margin="0 5 10 5" ToolTip="Add Question" Command="">
+                    <Button Margin="0 5 10 5" ToolTip="Add Question" Command="{Binding AddQuestion}">
                         <Button.Content>
                             <fa:IconBlock Icon="plus"/>
                         </Button.Content>
                     </Button>
-                    <Button  Margin="0 5 5 5" Command="">
+                    <Button  Margin="0 5 5 5" Command="{Binding RemoveQuestion}">
                         <Button.Content>
                             <fa:IconBlock Icon="minus" ToolTip="Remove Question"/>
                         </Button.Content>
@@ -48,39 +52,37 @@
             </Grid>
 
             <!--Edit Question List Panel-->
-            <ListBox Grid.Row="1" Margin="5 0" >
-                <ListBoxItem>
-                    <StackPanel>
+            <ListBox Grid.Row="1" Margin="5 0" ItemsSource="{Binding ActivePack.Questions}" SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
                         <TextBlock Text="Question: " FontWeight="Bold"/>
-                        <TextBlock Text="Bla bla bla"/>
-                    </StackPanel>
-                </ListBoxItem>
-                <ListBoxItem>
-                    <StackPanel>
-                        <TextBlock Text="Question: " FontWeight="Bold"/>
-                        <TextBlock Text="placeholder bla bla bla"/>
-                    </StackPanel>
-                </ListBoxItem>
+                            <TextBlock Text="{Binding QuizQuestion}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+              
             </ListBox>
         </Grid>
         
         <!--Edit Question Panel-->
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Visibility="{Binding SelectedQuestion, Converter={StaticResource NullToVisibilityConverter}}">
             <StackPanel  Margin="10 40 20 0">
                 <TextBlock Text="Question:" FontWeight="Bold"/>
-                <TextBox MinHeight="100" MaxHeight="300" TextWrapping="Wrap" Margin="0 0 0 20" />
-                
+                <TextBox Text="{Binding SelectedQuestion.QuizQuestion, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" MinHeight="100" MaxHeight="300" TextWrapping="Wrap" Margin="0 0 0 20" />
+
+
                 <TextBlock Text="Correct Answer:" FontWeight="Bold" Margin="0 10 0 0" />
-                <TextBox Text="" />
+                <TextBox Text="{Binding SelectedQuestion.CorrectAnswer}" />
 
                 <TextBlock Text="First Incorrect Answer:" FontWeight="Bold" Margin="0 10 0 0" />
-                <TextBox Text="" />
+                <TextBox Text="{Binding SelectedQuestion.InCorrectAnswers[0]}" />
 
                 <TextBlock Text="Second Incorrect Answer:" FontWeight="Bold" Margin="0 10 0 0" />
-                <TextBox Text="" />
+                <TextBox Text="{Binding SelectedQuestion.InCorrectAnswers[1]}"  />
 
                 <TextBlock Text="Third Incorrect Answer:" FontWeight="Bold" Margin="0 10 0 0" />
-                <TextBox Text="" />
+                <TextBox Text="{Binding SelectedQuestion.InCorrectAnswers[2]}"  />
             </StackPanel>
         </Grid>
     </Grid>
