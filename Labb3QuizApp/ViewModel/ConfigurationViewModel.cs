@@ -1,11 +1,13 @@
 ﻿using Labb3QuizApp.Command;
 using Labb3QuizApp.Model;
+using Labb3QuizApp.Services;
 
 namespace Labb3QuizApp.ViewModel
 {
     class ConfigurationViewModel : ViewModelBase
     {
         private readonly MainWindowViewModel? mainWindowViewModel;
+        private readonly LocalDataService? _localDataService;
 
         public MenuViewModel MenuViewModel { get; }
         public DelegateCommand RemoveQuestion { get; }
@@ -29,10 +31,22 @@ namespace Labb3QuizApp.ViewModel
 
         public QuestionPackViewModel? ActivePack { get => mainWindowViewModel?.ActivePack; }
 
-        public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel, MenuViewModel? menuViewModel)
+        public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel, MenuViewModel? menuViewModel, LocalDataService? localDataService)
         {
             MenuViewModel = menuViewModel;
             this.mainWindowViewModel = mainWindowViewModel;
+            _localDataService = localDataService ?? new LocalDataService();
+
+            var loadedQuestions = _localDataService?.LoadQuestions();
+
+            if (loadedQuestions != null)
+            {
+                foreach (var question in loadedQuestions)
+                {
+                    ActivePack?.Questions.Add(question);
+                }
+            }
+
             AddQuestion = new DelegateCommand(AddQuestionHandler);
             RemoveQuestion = new DelegateCommand(RemoveQuestionHandler, CanRemoveQuestion);
         }
@@ -40,9 +54,9 @@ namespace Labb3QuizApp.ViewModel
         {
             if (SelectedQuestion != null)
             {
-                mainWindowViewModel.ActivePack.Questions.Remove(SelectedQuestion);
+                ActivePack?.Questions.Remove(SelectedQuestion);
                 SelectedQuestion = null;
-
+                _localDataService?.SaveQuestions(ActivePack?.Questions);
             }
         }
         private bool CanRemoveQuestion(object? obj) => SelectedQuestion != null;
@@ -50,9 +64,16 @@ namespace Labb3QuizApp.ViewModel
         private void AddQuestionHandler(object? obj)
         {
             var newQuestion = new Question("New Question", "", "", "", "");
-            mainWindowViewModel?.ActivePack?.Questions.Add(newQuestion);
+            ActivePack?.Questions.Add(newQuestion);
             SelectedQuestion = newQuestion;
+            _localDataService?.SaveQuestions(ActivePack?.Questions);
         }
-
+        public void SaveQuestions()
+        {
+            if (ActivePack?.Questions != null)
+            {
+                _localDataService?.SaveQuestions(ActivePack.Questions);
+            }
+        }
     }
 }
