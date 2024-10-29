@@ -5,42 +5,46 @@ namespace Labb3QuizApp.ViewModel
 {
     class QuestionPackViewModel : ViewModelBase
     {
-        private readonly QuestionPack model;
+        private readonly QuestionPack _model;
 
         public ObservableCollection<Question> Questions { get; }
 
         public string Name
         {
-            get => model.Name;
+            get => _model.Name;
             set
             {
-                model.Name = value;
-                RaisePropertyChanged();
+                _model.Name = value;
+                RaisePropertyChanged(nameof(Name));
             }
         }
         public Difficulty Difficulty
         {
-            get => model.Difficulty;
+            get => _model.Difficulty;
             set
             {
-                model.Difficulty = value;
-                RaisePropertyChanged();
+                _model.Difficulty = value;
+                RaisePropertyChanged(nameof(Difficulty));
             }
         }
         public int TimeLimitInSeconds
         {
-            get => model.TimeLimitInSeconds;
+            get => _model.TimeLimitInSeconds;
             set
             {
-                model.TimeLimitInSeconds = value;
-                RaisePropertyChanged();
+                _model.TimeLimitInSeconds = value;
+                RaisePropertyChanged(nameof(TimeLimitInSeconds));
             }
         }
 
         public QuestionPackViewModel(QuestionPack model)
         {
-            this.model = model;
-            this.Questions = new ObservableCollection<Question>(model.Questions);
+            _model = model;
+            Questions = new ObservableCollection<Question>(model.Questions);
+        }
+        public override string ToString()
+        {
+            return $"{Name} ({Difficulty})";
         }
     }
 }

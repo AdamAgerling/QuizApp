@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:local="clr-namespace:Labb3QuizApp.Views"        
+             xmlns:local="clr-namespace:Labb3QuizApp.Views"    
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -18,10 +18,18 @@
                               Command="{Binding MenuViewModel.OpenCreateNewPack}"/>
                     <Separator />
 
-                    <MenuItem Header="_Select Question Pack"  
-                              Icon="{fa:Icon folderOpen}">
-
-                        <MenuItem  Header="Option 1"/>
+                    <MenuItem Header="_Select Question Pack" Icon="{fa:Icon folderOpen}">
+                        <MenuItem.ItemsSource>
+                            <Binding Path="MenuViewModel.QuestionPacks"/>
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemTemplate>
+                            <DataTemplate>
+                                <MenuItem Header="{Binding}" 
+                                          Command="{Binding DataContext.SelectQuestionPack,
+                                          RelativeSource={RelativeSource AncestorType=UserControl}}"                   
+                                          CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </MenuItem.ItemTemplate>
                     </MenuItem>
 
                     <MenuItem Header="_Delete Question Pack" 

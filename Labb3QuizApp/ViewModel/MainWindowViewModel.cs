@@ -1,4 +1,5 @@
-﻿using Labb3QuizApp.Model;
+﻿using Labb3QuizApp.Command;
+using Labb3QuizApp.Model;
 using Labb3QuizApp.Services;
 using System.Collections.ObjectModel;
 
@@ -9,6 +10,8 @@ namespace Labb3QuizApp.ViewModel
         private QuestionPackViewModel? _activePack;
 
         public ObservableCollection<QuestionPackViewModel> QuestionPacks { get; set; }
+
+        public DelegateCommand SelectPackCommand { get; }
 
         public PlayerViewModel PlayerViewModel { get; }
         public MenuViewModel MenuViewModel { get; }
@@ -22,13 +25,14 @@ namespace Labb3QuizApp.ViewModel
             set
             {
                 _activePack = value;
-                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(ActivePack));
                 if (_activePack != null)
                 {
                     RaisePropertyChanged(nameof(ActivePack.Questions));
                 }
             }
         }
+
         public MainWindowViewModel()
         {
             MenuViewModel = new MenuViewModel(this);
@@ -36,6 +40,5 @@ namespace Labb3QuizApp.ViewModel
             ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, LocalDataService);
             PlayerViewModel = new PlayerViewModel(this);
         }
-
     }
 }

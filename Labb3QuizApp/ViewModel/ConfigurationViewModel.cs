@@ -6,7 +6,7 @@ namespace Labb3QuizApp.ViewModel
 {
     class ConfigurationViewModel : ViewModelBase
     {
-        private readonly MainWindowViewModel? mainWindowViewModel;
+        private readonly MainWindowViewModel? _mainWindowViewModel;
         private readonly LocalDataService? _localDataService;
 
         public MenuViewModel MenuViewModel { get; }
@@ -15,6 +15,7 @@ namespace Labb3QuizApp.ViewModel
         public DelegateCommand AddQuestion { get; }
 
         private Question? _selectedQuestion;
+
         public Question? SelectedQuestion
         {
             get => _selectedQuestion;
@@ -29,12 +30,12 @@ namespace Labb3QuizApp.ViewModel
             }
         }
 
-        public QuestionPackViewModel? ActivePack { get => mainWindowViewModel?.ActivePack; }
+        public QuestionPackViewModel? ActivePack { get => _mainWindowViewModel?.ActivePack; }
 
         public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel, MenuViewModel? menuViewModel, LocalDataService? localDataService)
         {
             MenuViewModel = menuViewModel;
-            this.mainWindowViewModel = mainWindowViewModel;
+            _mainWindowViewModel = mainWindowViewModel;
             _localDataService = localDataService ?? new LocalDataService();
 
             var loadedQuestions = _localDataService?.LoadQuestions();
@@ -68,7 +69,7 @@ namespace Labb3QuizApp.ViewModel
             SelectedQuestion = newQuestion;
             _localDataService?.SaveQuestions(ActivePack?.Questions);
         }
-        public void SaveQuestions()
+        public void UpdateQuestion()
         {
             if (ActivePack?.Questions != null)
             {
