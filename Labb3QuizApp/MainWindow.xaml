@@ -9,17 +9,16 @@
     <Window.InputBindings>
         <KeyBinding Key="F4" Modifiers="Alt" Command=""/>
     </Window.InputBindings>
-    
     <Grid>
-        <!--<Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>-->
-        
-        
-        <views:MenuView />
-        <views:ConfigurationView />
-        <!--<views:PlayerView />-->
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
+            <views:MenuView Grid.Row="0" />
+            <views:ConfigurationView Grid.Row="1" Visibility="{Binding DataContext.ConfigurationVisibility, RelativeSource={RelativeSource AncestorType=Window}}" />
+            <views:PlayerView Grid.Row="1" Visibility="{Binding DataContext.PlayerViewVisibility, RelativeSource={RelativeSource AncestorType=Window}}" />
+        </Grid>
     </Grid>
 </Window>

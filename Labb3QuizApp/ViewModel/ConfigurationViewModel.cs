@@ -9,7 +9,7 @@ namespace Labb3QuizApp.ViewModel
         private readonly MainWindowViewModel? _mainWindowViewModel;
         private readonly LocalDataService? _localDataService;
 
-        public MenuViewModel MenuViewModel { get; }
+        public MenuViewModel? MenuViewModel { get; }
         public DelegateCommand RemoveQuestion { get; }
 
         public DelegateCommand AddQuestion { get; }

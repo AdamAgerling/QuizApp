@@ -4,9 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:local="clr-namespace:Labb3QuizApp.Views"    
+             xmlns:local="clr-namespace:Labb3QuizApp.Views" 
+             xmlns:command="clr-namespace:Labb3QuizApp.Command"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <command:InverseBooleanConverter x:Key="InverseBoolConverter" />
+    </UserControl.Resources>
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
@@ -64,12 +68,12 @@
                 <MenuItem Header="_View">
 
                     <MenuItem Header="_Play"
-                              IsEnabled="False"
+                              Command="{Binding MenuViewModel.NavigateToQuiz}"
                               Icon="{fa:Icon play, Foreground=Green}"
                               InputGestureText="Ctrl+P"/>
 
                     <MenuItem Header="_Edit"
-                              IsEnabled="False"
+                              Command="{Binding MenuViewModel.NavigateToConfiguration}"
                               Icon="{fa:Icon penToSquare}" 
                               InputGestureText="Ctrl+E"/>
 

@@ -12,13 +12,12 @@ namespace Labb3QuizApp.ViewModel
         private QuestionPackViewModel? _activePack;
 
 
+        public DelegateCommand NavigateToQuiz { get; }
+        public DelegateCommand NavigateToConfiguration { get; }
         public DelegateCommand OpenCreateNewPack { get; }
         public DelegateCommand OpenPackOptions { get; }
         public DelegateCommand SelectQuestionPack { get; }
-
         public ObservableCollection<QuestionPackViewModel> QuestionPacks { get; set; } = new ObservableCollection<QuestionPackViewModel>();
-
-
 
         public QuestionPackViewModel? ActivePack
         {
@@ -36,6 +35,14 @@ namespace Labb3QuizApp.ViewModel
             OpenCreateNewPack = new DelegateCommand(CreateNewPackDialog);
             OpenPackOptions = new DelegateCommand(PackOptionsDialog);
             SelectQuestionPack = new DelegateCommand(SelectPack);
+            NavigateToConfiguration = new DelegateCommand(obj =>
+            {
+                _mainWindowViewModel?.ShowConfigurationView.Execute(obj);
+            });
+            NavigateToQuiz = new DelegateCommand(obj =>
+            {
+                _mainWindowViewModel?.ShowPlayerView.Execute(obj);
+            });
         }
 
         private void CreateNewPackDialog(object? obj)
@@ -68,5 +75,4 @@ namespace Labb3QuizApp.ViewModel
             packOptionsDialog.ShowDialog();
         }
     }
-
 }

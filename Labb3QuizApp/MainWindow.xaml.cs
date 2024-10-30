@@ -9,7 +9,6 @@ namespace Labb3QuizApp
         public MainWindow()
         {
             InitializeComponent();
-
             DataContext = new MainWindowViewModel();
         }
     }
