@@ -5,12 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
              xmlns:local="clr-namespace:Labb3QuizApp.Views" 
-             xmlns:command="clr-namespace:Labb3QuizApp.Command"
+             xmlns:command="clr-namespace:Labb3QuizApp.Command" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
-        <command:InverseBooleanConverter x:Key="InverseBoolConverter" />
-    </UserControl.Resources>
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
@@ -29,8 +26,8 @@
                         <MenuItem.ItemTemplate>
                             <DataTemplate>
                                 <MenuItem Header="{Binding}" 
-                                          Command="{Binding DataContext.SelectQuestionPack,
-                                          RelativeSource={RelativeSource AncestorType=UserControl}}"                   
+                                          Command="{Binding DataContext.MenuViewModel.SelectQuestionPack,
+                                          RelativeSource={RelativeSource AncestorType=Window}}"                   
                                           CommandParameter="{Binding}" />
                             </DataTemplate>
                         </MenuItem.ItemTemplate>

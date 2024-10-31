@@ -6,6 +6,7 @@ namespace Labb3QuizApp.ViewModel
     class QuestionPackViewModel : ViewModelBase
     {
         private readonly QuestionPack _model;
+        public QuestionPack QuestionPack => _model;
 
         public ObservableCollection<Question> Questions { get; }
 

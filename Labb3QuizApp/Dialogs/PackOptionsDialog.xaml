@@ -11,20 +11,33 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="10">
-            <TextBlock Text="Pack Name:" Margin="1 10 0 2" FontWeight="Bold"/>
-            <TextBox Text="{}"/>
+        <StackPanel Margin="10 10">
+            <TextBlock Text="Pack Name:" Margin="1 0 0 2" FontWeight="Bold"/>
+            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
 
         </StackPanel>
         <StackPanel Margin="10 0 " Grid.Row="1">
             <TextBlock Text="Difficulty:" FontWeight="Bold" Margin="0 10 0 5" />
-            <ComboBox ItemsSource="{Binding QuestionPack.Difficulty}"/>
+            <ComboBox ItemsSource="{Binding SelectDifficulty}" 
+                  SelectedItem="{Binding Difficulty}"/>
         </StackPanel>
+
         <StackPanel Margin="10 0" Grid.Row="2">
-            <TextBlock Text="Time Limit:" FontWeight="Bold" Margin="0 10 0 0"/>
-            <Slider />
+            <WrapPanel>
+                <TextBlock Text="Time Limit:" FontWeight="Bold" Margin="0 10 0 0"/>
+                <TextBlock Text="{Binding TimeLimitInSeconds}" />
+            </WrapPanel>
+            <Slider Minimum="5" Maximum="120" TickFrequency="5" TickPlacement="Both"  Ticks="24"
+                Value="{Binding TimeLimitInSeconds, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
+
+        <WrapPanel Margin="0 15" Grid.Row="3" HorizontalAlignment="Center">
+            <Button Content="Cancel" Click="CancelButton_Click" Margin="0 0 30 0" Padding="5 0"/>
+            <Button Content="Edit" Click="EditButton_Click" Padding="5 0"/>
+        </WrapPanel>
+
     </Grid>
 </Window>

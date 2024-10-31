@@ -10,7 +10,7 @@ namespace Labb3QuizApp.ViewModel
         private QuestionPackViewModel? _activePack;
 
         public MenuViewModel MenuViewModel { get; }
-        public LocalDataService LocalDataService { get; }
+        public LocalDataService? LocalDataService { get; }
 
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; }
@@ -53,6 +53,7 @@ namespace Labb3QuizApp.ViewModel
             {
                 _activePack = value;
                 RaisePropertyChanged(nameof(ActivePack));
+                ConfigurationViewModel?.RaisePropertyChanged();
                 if (_activePack != null)
                 {
                     RaisePropertyChanged(nameof(ActivePack.Questions));
@@ -63,6 +64,7 @@ namespace Labb3QuizApp.ViewModel
         public MainWindowViewModel()
         {
             MenuViewModel = new MenuViewModel(this);
+            // TODO: Fix Questionpack, only load New QuestionPack if there isnt one (IE first time loading the program)
             ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack"));
             PlayerViewModel = new PlayerViewModel(this);
             ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, LocalDataService);

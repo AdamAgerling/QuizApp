@@ -28,7 +28,6 @@ namespace Labb3QuizApp.ViewModel
                 }
             }
         }
-
         public QuestionPackViewModel? ActivePack { get => _mainWindowViewModel?.ActivePack; }
 
         public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel, MenuViewModel? menuViewModel, LocalDataService? localDataService)

@@ -1,6 +1,7 @@
 ﻿using Labb3QuizApp.Command;
 using Labb3QuizApp.Dialogs;
 using Labb3QuizApp.Model;
+using Labb3QuizApp.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 
@@ -42,12 +43,14 @@ namespace Labb3QuizApp.ViewModel
             {
                 _mainWindowViewModel?.ShowPlayerView.Execute(obj);
             });
+            LoadQuestionPacks();
         }
 
         private void CreateNewPackDialog(object? obj)
         {
             CreateNewPackDialog createNewPackDialog = new();
             var viewModel = new CreateNewPackDialogViewModel();
+            createNewPackDialog.DataContext = viewModel;
 
             if (createNewPackDialog.DataContext is CreateNewPackDialogViewModel dialogViewModel &&
              createNewPackDialog.ShowDialog() == true)
@@ -57,14 +60,21 @@ namespace Labb3QuizApp.ViewModel
                 var newPackViewModel = new QuestionPackViewModel(newPack);
                 QuestionPacks.Add(newPackViewModel);
                 ActivePack = newPackViewModel;
+                SaveCurrentPacks();
             }
         }
         private void SelectPack(object? obj)
         {
+            Debug.WriteLine($"Received object: {obj?.GetType()}");
             if (obj is QuestionPackViewModel selectedPack)
             {
                 Debug.WriteLine($"Selected Pack Name: {selectedPack.Name}");
+                ActivePack = selectedPack;
                 _mainWindowViewModel.ActivePack = selectedPack;
+            }
+            else
+            {
+                Debug.WriteLine("No valid pack selected.");
             }
         }
         private void PackOptionsDialog(object? obj)
@@ -72,6 +82,33 @@ namespace Labb3QuizApp.ViewModel
             PackOptionsDialog packOptionsDialog = new();
 
             packOptionsDialog.ShowDialog();
+        }
+        private void LoadQuestionPacks()
+        {
+            var dataService = new LocalDataService();
+            var packs = dataService.LoadQuestionPacks();
+            foreach (var pack in packs)
+            {
+                QuestionPacks.Add(new QuestionPackViewModel(pack));
+            }
+        }
+        public void SaveCurrentPacks()
+        {
+            var dataService = new LocalDataService();
+            var existingPacks = dataService.LoadQuestionPacks();
+
+            var updatedPacks = QuestionPacks.Select(p => p.QuestionPack).ToList();
+            foreach (var updatedPack in updatedPacks)
+            {
+                var existingPack = existingPacks.FirstOrDefault(p => p.Name == updatedPack.Name);
+                if (existingPack != null)
+                {
+                    existingPacks.Remove(existingPack);
+                }
+                existingPacks.Add(updatedPack);
+            }
+
+            dataService.SaveQuestionPacks(existingPacks);
         }
     }
 }

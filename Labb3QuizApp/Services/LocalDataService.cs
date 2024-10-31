@@ -18,19 +18,37 @@ namespace Labb3QuizApp.Services
 
         public void SaveQuestions(List<Question> questions, string packName)
         {
-            var questionPack = new QuestionPack(packName)
-            {
-                Name = packName,
-                Questions = questions
-            };
+            var existingPacks = LoadQuestionPacks();
 
-            var json = JsonSerializer.Serialize(new { QuestionPacks = new List<QuestionPack> { questionPack } }, options);
+            var packToUpdate = existingPacks.FirstOrDefault(p => p.Name == packName);
+            if (packToUpdate != null)
+            {
+                packToUpdate.Questions = questions;
+            }
+            else
+            {
+                var newPack = new QuestionPack(packName) { Questions = questions };
+                existingPacks.Add(newPack);
+            }
+
+            var json = JsonSerializer.Serialize(new { QuestionPacks = existingPacks }, options);
             File.WriteAllText(filePath, json);
         }
 
-        public void SaveQuestionPacks(List<QuestionPack> questionPack)
+        public void SaveQuestionPacks(List<QuestionPack> newPacks)
         {
-            var json = JsonSerializer.Serialize(new { QuestionPacks = questionPack }, options);
+            var existingPacks = LoadQuestionPacks();
+
+            foreach (var newPack in newPacks)
+            {
+                var existingPack = existingPacks.FirstOrDefault(p => p.Name == newPack.Name);
+                if (existingPack != null)
+                {
+                    existingPacks.Remove(existingPack);
+                }
+                existingPacks.Add(newPack);
+            }
+            var json = JsonSerializer.Serialize(new { QuestionPacks = existingPacks }, options);
             File.WriteAllText(filePath, json);
         }
 
@@ -52,7 +70,6 @@ namespace Labb3QuizApp.Services
                 return new List<QuestionPack>();
             }
         }
-
         public List<Question> LoadQuestionsInPack(string packName)
         {
             var json = File.ReadAllText($"{packName}_questions.json");
@@ -61,7 +78,7 @@ namespace Labb3QuizApp.Services
 
         public class RootObject
         {
-            public List<QuestionPack>? QuestionPacks { get; set; }
+            public List<QuestionPack> QuestionPacks { get; set; } = new List<QuestionPack>();
         }
     }
 }
