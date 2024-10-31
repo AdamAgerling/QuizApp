@@ -29,7 +29,7 @@
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0">
-                <TextBlock Text="{Binding ActivePack, FallbackValue='No pack chosen'}" FontWeight="Bold" VerticalAlignment="Center" Margin="10 0 0 0"/>
+                <TextBlock Text="{Binding ActivePack.Name, FallbackValue='No pack chosen'}" FontWeight="Bold" VerticalAlignment="Center" Margin="10 0 0 0"/>
                 <WrapPanel HorizontalAlignment="Right">
 
                 <!--Various UI Buttons-->

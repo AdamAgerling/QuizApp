@@ -11,7 +11,6 @@ namespace Labb3QuizApp.ViewModel
         private readonly MainWindowViewModel? _mainWindowViewModel;
         private QuestionPackViewModel? _activePack;
 
-
         public DelegateCommand NavigateToQuiz { get; }
         public DelegateCommand NavigateToConfiguration { get; }
         public DelegateCommand OpenCreateNewPack { get; }

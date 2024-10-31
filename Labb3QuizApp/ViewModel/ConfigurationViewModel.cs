@@ -11,7 +11,6 @@ namespace Labb3QuizApp.ViewModel
 
         public MenuViewModel? MenuViewModel { get; }
         public DelegateCommand RemoveQuestion { get; }
-
         public DelegateCommand AddQuestion { get; }
 
         private Question? _selectedQuestion;
@@ -38,13 +37,20 @@ namespace Labb3QuizApp.ViewModel
             _mainWindowViewModel = mainWindowViewModel;
             _localDataService = localDataService ?? new LocalDataService();
 
-            var loadedQuestions = _localDataService?.LoadQuestions();
+            var loadedQuestionPacks = _localDataService?.LoadQuestionPacks();
 
-            if (loadedQuestions != null)
+            if (loadedQuestionPacks != null)
             {
-                foreach (var question in loadedQuestions)
+                foreach (var pack in loadedQuestionPacks)
                 {
-                    ActivePack?.Questions.Add(question);
+                    if (pack.Name == ActivePack?.Name)
+                    {
+                        ActivePack.Questions.Clear();
+                        foreach (var question in pack.Questions)
+                        {
+                            ActivePack?.Questions.Add(question);
+                        }
+                    }
                 }
             }
 
@@ -57,7 +63,7 @@ namespace Labb3QuizApp.ViewModel
             {
                 ActivePack?.Questions.Remove(SelectedQuestion);
                 SelectedQuestion = null;
-                _localDataService?.SaveQuestions(ActivePack?.Questions);
+                _localDataService?.SaveQuestions(ActivePack?.Questions.ToList(), ActivePack?.Name);
             }
         }
         private bool CanRemoveQuestion(object? obj) => SelectedQuestion != null;
@@ -67,13 +73,13 @@ namespace Labb3QuizApp.ViewModel
             var newQuestion = new Question("New Question", "", "", "", "");
             ActivePack?.Questions.Add(newQuestion);
             SelectedQuestion = newQuestion;
-            _localDataService?.SaveQuestions(ActivePack?.Questions);
+            _localDataService?.SaveQuestions(ActivePack?.Questions.ToList(), ActivePack?.Name);
         }
         public void UpdateQuestion()
         {
             if (ActivePack?.Questions != null)
             {
-                _localDataService?.SaveQuestions(ActivePack.Questions);
+                _localDataService?.SaveQuestions(ActivePack?.Questions.ToList(), ActivePack?.Name);
             }
         }
     }

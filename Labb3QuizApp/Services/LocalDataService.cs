@@ -7,7 +7,7 @@ namespace Labb3QuizApp.Services
 
     internal class LocalDataService
     {
-        private readonly string filePath = "questions.json";
+        private readonly string filePath = "Questionpacks.json";
 
         private JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -16,22 +16,52 @@ namespace Labb3QuizApp.Services
             IncludeFields = true
         };
 
-        public void SaveQuestions(IEnumerable<Question> questions)
+        public void SaveQuestions(List<Question> questions, string packName)
         {
-            var json = JsonSerializer.Serialize(questions, options);
+            var questionPack = new QuestionPack(packName)
+            {
+                Name = packName,
+                Questions = questions
+            };
+
+            var json = JsonSerializer.Serialize(new { QuestionPacks = new List<QuestionPack> { questionPack } }, options);
             File.WriteAllText(filePath, json);
         }
 
-        public List<Question> LoadQuestions()
+        public void SaveQuestionPacks(List<QuestionPack> questionPack)
         {
-            if (!File.Exists(filePath))
-            {
-                return new List<Question>();
-            }
+            var json = JsonSerializer.Serialize(new { QuestionPacks = questionPack }, options);
+            File.WriteAllText(filePath, json);
+        }
 
-            var json = File.ReadAllText(filePath);
-            return string.IsNullOrWhiteSpace(json) ? new List<Question>() :
-                JsonSerializer.Deserialize<List<Question>>(json, options) ?? new List<Question>();
+        public List<QuestionPack> LoadQuestionPacks()
+        {
+            try
+            {
+                var json = File.ReadAllText(filePath);
+                var result = JsonSerializer.Deserialize<RootObject>(json, options);
+                return result?.QuestionPacks ?? new List<QuestionPack>();
+            }
+            catch (FileNotFoundException)
+            {
+                return new List<QuestionPack>();
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine($"JSON Error: {ex.Message}");
+                return new List<QuestionPack>();
+            }
+        }
+
+        public List<Question> LoadQuestionsInPack(string packName)
+        {
+            var json = File.ReadAllText($"{packName}_questions.json");
+            return JsonSerializer.Deserialize<List<Question>>(json, options) ?? new List<Question>();
+        }
+
+        public class RootObject
+        {
+            public List<QuestionPack>? QuestionPacks { get; set; }
         }
     }
 }

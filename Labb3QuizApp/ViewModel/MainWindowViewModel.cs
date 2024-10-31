@@ -82,7 +82,5 @@ namespace Labb3QuizApp.ViewModel
             ConfigurationVisibility = Visibility.Visible;
             PlayerViewVisibility = Visibility.Hidden;
         }
-
-
     }
 }
