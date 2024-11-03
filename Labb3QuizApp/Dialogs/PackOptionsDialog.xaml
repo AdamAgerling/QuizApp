@@ -16,22 +16,22 @@
 
         <StackPanel Margin="10 10">
             <TextBlock Text="Pack Name:" Margin="1 0 0 2" FontWeight="Bold"/>
-            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Text="{Binding ActivePack.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
         </StackPanel>
         <StackPanel Margin="10 0 " Grid.Row="1">
             <TextBlock Text="Difficulty:" FontWeight="Bold" Margin="0 10 0 5" />
             <ComboBox ItemsSource="{Binding SelectDifficulty}" 
-                  SelectedItem="{Binding Difficulty}"/>
+                 SelectedItem="{Binding ActivePack.Difficulty, Mode=TwoWay}"/>
         </StackPanel>
 
         <StackPanel Margin="10 0" Grid.Row="2">
             <WrapPanel>
                 <TextBlock Text="Time Limit:" FontWeight="Bold" Margin="0 10 0 0"/>
-                <TextBlock Text="{Binding TimeLimitInSeconds}" />
+                <TextBlock Text="{Binding ActivePack.TimeLimitInSeconds}" />
             </WrapPanel>
             <Slider Minimum="5" Maximum="120" TickFrequency="5" TickPlacement="Both"  Ticks="24"
-                Value="{Binding TimeLimitInSeconds, UpdateSourceTrigger=PropertyChanged}"/>
+                Value="{Binding ActivePack.TimeLimitInSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
         <WrapPanel Margin="0 15" Grid.Row="3" HorizontalAlignment="Center">

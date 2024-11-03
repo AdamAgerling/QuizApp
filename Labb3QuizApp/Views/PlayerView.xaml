@@ -22,7 +22,7 @@
         
         <!--Play Question Panel-->
         <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="QUESTION" FontSize="40" FontWeight="Medium"/>
+            <TextBlock Text="{Binding CurrentQuestion.QuizQuestion}" FontSize="40" FontWeight="Medium"/>
             <StackPanel HorizontalAlignment="Center">
             <TextBlock Text="1 out of 2" FontSize="16" />
             </StackPanel>
@@ -41,7 +41,15 @@
             </Grid.RowDefinitions>
 
             <!--Play Answer Panel-->
-            <Button HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1" Content="1" Margin="20" MaxWidth="250" MaxHeight="100"/>
+            <ListBox ItemsSource="{Binding CurrentQuestion.ShuffledAnswers}" Grid.Row="1" Margin="10">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Button HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1" Content="{Binding DataContext.}" Margin="20" MaxWidth="250" MaxHeight="100"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                
+            </ListBox>
+            
             <Button HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Content="2" Margin="20" MaxWidth="250" MaxHeight="100"/>
             <Button HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="2" Content="3" Margin="20" MaxWidth="250" MaxHeight="100"/>
             <Button HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="4" Margin="20" MaxWidth="250" MaxHeight="100"/>

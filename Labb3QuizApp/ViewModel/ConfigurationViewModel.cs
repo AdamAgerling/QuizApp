@@ -1,13 +1,14 @@
 ﻿using Labb3QuizApp.Command;
 using Labb3QuizApp.Model;
 using Labb3QuizApp.Services;
-
 namespace Labb3QuizApp.ViewModel
 {
     class ConfigurationViewModel : ViewModelBase
     {
         private readonly MainWindowViewModel? _mainWindowViewModel;
         private readonly LocalDataService? _localDataService;
+
+        public List<Difficulty> SelectDifficulty { get; } = Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>().ToList();
 
         public MenuViewModel? MenuViewModel { get; }
         public DelegateCommand RemoveQuestion { get; }
@@ -28,7 +29,18 @@ namespace Labb3QuizApp.ViewModel
                 }
             }
         }
-        public QuestionPackViewModel? ActivePack { get => _mainWindowViewModel?.ActivePack; }
+        public QuestionPackViewModel? ActivePack
+        {
+            get => _mainWindowViewModel?.ActivePack;
+            set
+            {
+                if (_mainWindowViewModel != null && _mainWindowViewModel.ActivePack != value)
+                {
+                    _mainWindowViewModel.ActivePack = value;
+                    RaisePropertyChanged(nameof(ActivePack));
+                }
+            }
+        }
 
         public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel, MenuViewModel? menuViewModel, LocalDataService? localDataService)
         {
@@ -52,7 +64,6 @@ namespace Labb3QuizApp.ViewModel
                     }
                 }
             }
-
             AddQuestion = new DelegateCommand(AddQuestionHandler);
             RemoveQuestion = new DelegateCommand(RemoveQuestionHandler, CanRemoveQuestion);
         }
@@ -79,6 +90,29 @@ namespace Labb3QuizApp.ViewModel
             if (ActivePack?.Questions != null)
             {
                 _localDataService?.SaveQuestions(ActivePack?.Questions.ToList(), ActivePack?.Name);
+            }
+        }
+        public void UpdatePack()
+        {
+            if (ActivePack == null || ActivePack.Name == null)
+            {
+                return;
+            }
+            var packs = _localDataService?.LoadQuestionPacks();
+
+            if (packs == null)
+            {
+                return;
+            }
+
+            var packToUpdate = packs.FirstOrDefault(p => p.Name == ActivePack.Name);
+            if (packToUpdate != null)
+            {
+                packToUpdate.Name = ActivePack.Name;
+                packToUpdate.Difficulty = ActivePack.Difficulty;
+                packToUpdate.TimeLimitInSeconds = ActivePack.TimeLimitInSeconds;
+
+                _localDataService?.SaveQuestionPacks(packs);
             }
         }
     }

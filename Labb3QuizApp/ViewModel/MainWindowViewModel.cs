@@ -64,8 +64,13 @@ namespace Labb3QuizApp.ViewModel
         public MainWindowViewModel()
         {
             MenuViewModel = new MenuViewModel(this);
-            // TODO: Fix Questionpack, only load New QuestionPack if there isnt one (IE first time loading the program)
-            ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack"));
+            Application.Current.Exit += (s, e) => MenuViewModel.StoreLastActivePack();
+
+            if (ActivePack == null)
+            {
+                ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack"));
+            }
+
             PlayerViewModel = new PlayerViewModel(this);
             ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, LocalDataService);
 

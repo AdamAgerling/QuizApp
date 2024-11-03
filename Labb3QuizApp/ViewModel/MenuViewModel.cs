@@ -4,6 +4,7 @@ using Labb3QuizApp.Model;
 using Labb3QuizApp.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 
 namespace Labb3QuizApp.ViewModel
 {
@@ -11,7 +12,7 @@ namespace Labb3QuizApp.ViewModel
     {
         private readonly MainWindowViewModel? _mainWindowViewModel;
         private QuestionPackViewModel? _activePack;
-
+        private LocalDataService _localDataService;
         public DelegateCommand NavigateToQuiz { get; }
         public DelegateCommand NavigateToConfiguration { get; }
         public DelegateCommand OpenCreateNewPack { get; }
@@ -44,6 +45,7 @@ namespace Labb3QuizApp.ViewModel
                 _mainWindowViewModel?.ShowPlayerView.Execute(obj);
             });
             LoadQuestionPacks();
+            LoadLastActivePack();
         }
 
         private void CreateNewPackDialog(object? obj)
@@ -63,9 +65,9 @@ namespace Labb3QuizApp.ViewModel
                 SaveCurrentPacks();
             }
         }
+
         private void SelectPack(object? obj)
         {
-            Debug.WriteLine($"Received object: {obj?.GetType()}");
             if (obj is QuestionPackViewModel selectedPack)
             {
                 Debug.WriteLine($"Selected Pack Name: {selectedPack.Name}");
@@ -77,12 +79,17 @@ namespace Labb3QuizApp.ViewModel
                 Debug.WriteLine("No valid pack selected.");
             }
         }
+
         private void PackOptionsDialog(object? obj)
         {
             PackOptionsDialog packOptionsDialog = new();
 
+            var configurationViewModel = new ConfigurationViewModel(_mainWindowViewModel, this, _localDataService);
+            packOptionsDialog.DataContext = configurationViewModel;
+
             packOptionsDialog.ShowDialog();
         }
+
         private void LoadQuestionPacks()
         {
             var dataService = new LocalDataService();
@@ -92,6 +99,7 @@ namespace Labb3QuizApp.ViewModel
                 QuestionPacks.Add(new QuestionPackViewModel(pack));
             }
         }
+
         public void SaveCurrentPacks()
         {
             var dataService = new LocalDataService();
@@ -107,8 +115,28 @@ namespace Labb3QuizApp.ViewModel
                 }
                 existingPacks.Add(updatedPack);
             }
-
             dataService.SaveQuestionPacks(existingPacks);
+        }
+
+        public void StoreLastActivePack()
+        {
+            if (ActivePack?.Name != null)
+            {
+                File.WriteAllText("LastActivePack.txt", ActivePack.Name);
+            }
+        }
+        private void LoadLastActivePack()
+        {
+            if (File.Exists("LastActivePack.txt"))
+            {
+                var lastPackName = File.ReadAllText("LastActivePack.txt");
+                var pack = QuestionPacks.FirstOrDefault(p => p.Name == lastPackName);
+                if (pack != null)
+                {
+                    ActivePack = pack;
+                    _mainWindowViewModel.ActivePack = pack;
+                }
+            }
         }
     }
 }

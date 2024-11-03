@@ -1,4 +1,5 @@
-﻿using Labb3QuizApp.Command;
+﻿using Labb3QuizApp.Model;
+using System.Collections.ObjectModel;
 using System.Windows.Threading;
 
 namespace Labb3QuizApp.ViewModel
@@ -6,21 +7,31 @@ namespace Labb3QuizApp.ViewModel
     class PlayerViewModel : ViewModelBase
     {
         private readonly MainWindowViewModel? mainWindowViewModel;
-        public DelegateCommand UpdateButtonCommand { get; }
-
+        private readonly Random _random = new Random();
         private DispatcherTimer _timer;
+        private ObservableCollection<Question> _randomizedQuestions;
+        private Question? _currentQuestion;
 
-        //private string _testData;
+        public ObservableCollection<Question> RandomizedQuestions
+        {
+            get => _randomizedQuestions;
+            set
+            {
+                _randomizedQuestions = value;
+                RaisePropertyChanged(nameof(RandomizedQuestions));
+            }
+        }
 
-        //public string TestData
-        //{
-        //    get => _testData;
-        //    private set
-        //    {
-        //        _testData = value;
-        //        RaisePropertyChanged();
-        //    }
-        //}
+        public Question? CurrentQuestion
+        {
+            get => _currentQuestion;
+            set
+            {
+                _currentQuestion = value;
+                RaisePropertyChanged(nameof(CurrentQuestion));
+            }
+        }
+
 
         public PlayerViewModel(MainWindowViewModel? mainWindowViewModel)
         {
@@ -40,16 +51,10 @@ namespace Labb3QuizApp.ViewModel
             //_timer += 
         }
 
-        //private bool CanUpdateButton(object? arg)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public void StartQuiz(ObservableCollection<Question> question)
+        {
 
-        //private void UpdateButton(object obj)
-        //{
-        //    //TestData += "x";
-        //}
-
+        }
 
     }
 }
