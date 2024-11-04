@@ -1,6 +1,7 @@
 ﻿using Labb3QuizApp.Command;
 using Labb3QuizApp.Model;
 using Labb3QuizApp.Services;
+using System.Diagnostics;
 using System.Windows;
 
 namespace Labb3QuizApp.ViewModel
@@ -13,7 +14,7 @@ namespace Labb3QuizApp.ViewModel
         public LocalDataService? LocalDataService { get; }
 
         public ConfigurationViewModel ConfigurationViewModel { get; }
-        public PlayerViewModel PlayerViewModel { get; }
+        public PlayerViewModel PlayerViewModel { get; set; }
 
         private Visibility _playerViewVisibility = Visibility.Hidden;
         public Visibility PlayerViewVisibility
@@ -70,9 +71,8 @@ namespace Labb3QuizApp.ViewModel
             {
                 ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack"));
             }
-
-            PlayerViewModel = new PlayerViewModel(this);
             ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, LocalDataService);
+            PlayerViewModel = new PlayerViewModel(this);
 
             ShowConfigurationView = new DelegateCommand(ShowConfigurationViewHandler);
             ShowPlayerView = new DelegateCommand(ShowPlayerViewHandler);
@@ -80,14 +80,22 @@ namespace Labb3QuizApp.ViewModel
 
         private void ShowPlayerViewHandler(object? obj)
         {
+            if (ActivePack == null || ActivePack.Questions.Count == 0)
+            {
+                Debug.WriteLine("No ActivePack or no questions in ActivePack.");
+                return;
+            }
+
             PlayerViewVisibility = Visibility.Visible;
             ConfigurationVisibility = Visibility.Hidden;
+            PlayerViewModel.StartQuiz(ActivePack.Questions);
         }
 
         private void ShowConfigurationViewHandler(object? obj)
         {
             ConfigurationVisibility = Visibility.Visible;
             PlayerViewVisibility = Visibility.Hidden;
+            PlayerViewModel.StopQuiz();
         }
     }
 }

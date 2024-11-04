@@ -11,11 +11,11 @@ namespace Labb3QuizApp.Views
         {
             InitializeComponent();
         }
+
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             var viewModel = (ConfigurationViewModel)DataContext;
             viewModel.UpdateQuestion();
-
         }
     }
 }

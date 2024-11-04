@@ -63,6 +63,7 @@ namespace Labb3QuizApp.ViewModel
                 QuestionPacks.Add(newPackViewModel);
                 ActivePack = newPackViewModel;
                 SaveCurrentPacks();
+                SelectPack(newPackViewModel);
             }
         }
 

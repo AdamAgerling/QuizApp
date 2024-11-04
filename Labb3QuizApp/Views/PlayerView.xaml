@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Labb3QuizApp.Views"
-             DataContext="{Binding PlayerViewModel}"
-             mc:Ignorable="d" 
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Margin="10" d:ShowGridLines="True">
         
@@ -22,12 +22,20 @@
         
         <!--Play Question Panel-->
         <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Text="{Binding CurrentQuestion.QuizQuestion}" FontSize="40" FontWeight="Medium"/>
+            <TextBlock Text="{Binding PlayerViewModel.CurrentQuestion.QuizQuestion, 
+                                      TargetNullValue='No question available'}" 
+                                      FontSize="40" FontWeight="Medium"/>
             <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="1 out of 2" FontSize="16" />
+            <TextBlock Text="{Binding something}" FontSize="16" />
             </StackPanel>
         </StackPanel>
-        
+        <Button Grid.Column="1"  Command="{Binding MenuViewModel.NavigateToConfiguration}" FontSize="20" Height="40" Width="250" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20 10" Background="AliceBlue"  >
+            <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <fa:IconBlock Icon="arrowLeft" Width="20" Height="20"/>
+                <TextBlock Text="Return to Configuration" Padding="5 0"/>
+            </WrapPanel>
+        </Button>
+
         <Grid Grid.Row="1" d:ShowGridLines="True">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -41,19 +49,46 @@
             </Grid.RowDefinitions>
 
             <!--Play Answer Panel-->
-            <ListBox ItemsSource="{Binding CurrentQuestion.ShuffledAnswers}" Grid.Row="1" Margin="10">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Button HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="1" Content="{Binding DataContext.}" Margin="20" MaxWidth="250" MaxHeight="100"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-                
-            </ListBox>
+                   
+            <Button HorizontalAlignment="Stretch" 
+                    Grid.Row="0" 
+                    Grid.Column="1" 
+                    Content="{Binding PlayerViewModel.Answer1,Mode=OneWay}"
+                    Command="{Binding PlayerViewModel.SelectedAnswer}"
+                    CommandParameter="{Binding PlayerViewModel.Answer1}" 
+                    Margin="20" 
+                    MaxWidth="250" 
+                    MaxHeight="100"/>
             
-            <Button HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="1" Content="2" Margin="20" MaxWidth="250" MaxHeight="100"/>
-            <Button HorizontalAlignment="Stretch" Grid.Row="0" Grid.Column="2" Content="3" Margin="20" MaxWidth="250" MaxHeight="100"/>
-            <Button HorizontalAlignment="Stretch" Grid.Row="1" Grid.Column="2" Content="4" Margin="20" MaxWidth="250" MaxHeight="100"/>
-        
+            <Button HorizontalAlignment="Stretch" 
+                    Grid.Row="0" 
+                    Grid.Column="2" 
+                    Content="{Binding PlayerViewModel.Answer2, Mode=OneWay}"
+                    Command="{Binding PlayerViewModel.SelectedAnswer}"
+                    CommandParameter="{Binding PlayerViewModel.Answer2}" 
+                    Margin="20" 
+                    MaxWidth="250" 
+                    MaxHeight="100"/>
+            
+            <Button HorizontalAlignment="Stretch" 
+                    Grid.Row="1" 
+                    Grid.Column="1" 
+                    Content="{Binding PlayerViewModel.Answer3, Mode=OneWay}"
+                    Command="{Binding PlayerViewModel.SelectedAnswer}"
+                    CommandParameter="{Binding PlayerViewModel.Answer3}" 
+                    Margin="20" 
+                    MaxWidth="250" 
+                    MaxHeight="100"/>
+            
+            <Button HorizontalAlignment="Stretch" 
+                    Grid.Row="1" 
+                    Grid.Column="2" 
+                    Content="{Binding PlayerViewModel.Answer4, Mode=OneWay}"
+                    Command="{Binding PlayerViewModel.SelectedAnswer}"
+                    CommandParameter="{Binding PlayerViewModel.Answer4}" 
+                    Margin="20" 
+                    MaxWidth="250" 
+                    MaxHeight="100"/>
         </Grid>
     </Grid>
 </UserControl>
