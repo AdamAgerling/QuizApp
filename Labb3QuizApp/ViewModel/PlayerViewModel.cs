@@ -14,6 +14,42 @@ namespace Labb3QuizApp.ViewModel
         private ObservableCollection<Question> _randomizedQuestions;
         private Question _currentQuestion;
         private string[] _currentAnswers;
+        private int _currentQuestionCount;
+        private int _totalQuestions;
+
+        private int _timePerQuestion;
+
+        public int TimePerQuestion
+        {
+            get => _timePerQuestion;
+            set
+            {
+                _timePerQuestion = value;
+                RaisePropertyChanged(nameof(TimePerQuestion));
+            }
+        }
+
+        public int CurrentQuestionCount
+        {
+            get => _currentQuestionCount;
+            set
+            {
+                _currentQuestionCount = value;
+                RaisePropertyChanged(nameof(CurrentQuestionCount));
+                RaisePropertyChanged(nameof(QuestionProgress));
+            }
+        }
+
+        public int TotalQuestions
+        {
+            get => _totalQuestions;
+            set
+            {
+                _totalQuestions = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(QuestionProgress));
+            }
+        }
         public ObservableCollection<Question> RandomizedQuestions
         {
             get => _randomizedQuestions;
@@ -23,6 +59,7 @@ namespace Labb3QuizApp.ViewModel
                 RaisePropertyChanged(nameof(RandomizedQuestions));
             }
         }
+        public string QuestionProgress => $"Question {CurrentQuestionCount} out of {TotalQuestions}";
 
         public Question CurrentQuestion
         {
@@ -77,10 +114,18 @@ namespace Labb3QuizApp.ViewModel
 
         private void QuestionTimer(object? sender, EventArgs e)
         {
-            LoadNextQuestion();
+            if (TimePerQuestion > 0)
+            {
+                TimePerQuestion--;
+            }
+            else
+            {
+                LoadNextQuestion();
+                TimePerQuestion = _mainWindowViewModel.ActivePack.TimeLimitInSeconds;
+            }
         }
 
-        public void StartQuiz(ObservableCollection<Question> questions)
+        public void StartQuiz(ObservableCollection<Question> questions, int timeLimitInSeconds)
         {
             if (RandomizedQuestions == null || questions.Count == 0)
             {
@@ -88,7 +133,14 @@ namespace Labb3QuizApp.ViewModel
             }
             RandomizedQuestions = new ObservableCollection<Question>(questions.OrderBy(q => _random.Next()).ToList());
 
+            if (RandomizedQuestions.Any())
+            {
+                TotalQuestions = RandomizedQuestions.Count;
+                CurrentQuestionCount = 1;
+                RaisePropertyChanged(nameof(QuestionProgress));
+            }
 
+            TimePerQuestion = _mainWindowViewModel.ActivePack.TimeLimitInSeconds;
             LoadNextQuestion();
             _timer.Start();
         }
@@ -99,6 +151,9 @@ namespace Labb3QuizApp.ViewModel
             {
                 CurrentQuestion = RandomizedQuestions[0];
                 RandomizedQuestions.RemoveAt(0);
+                CurrentQuestionCount = TotalQuestions - RandomizedQuestions.Count;
+
+                TimePerQuestion = _mainWindowViewModel.ActivePack.TimeLimitInSeconds;
             }
             else
             {
@@ -113,7 +168,7 @@ namespace Labb3QuizApp.ViewModel
 
         public void StopQuiz()
         {
-            _timer?.Stop();
+            _timer.Stop();
             RandomizedQuestions.Clear();
             Debug.WriteLine("Quiz stopped.");
         }

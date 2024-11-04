@@ -88,7 +88,7 @@ namespace Labb3QuizApp.ViewModel
 
             PlayerViewVisibility = Visibility.Visible;
             ConfigurationVisibility = Visibility.Hidden;
-            PlayerViewModel.StartQuiz(ActivePack.Questions);
+            PlayerViewModel.StartQuiz(ActivePack.Questions, ActivePack.TimeLimitInSeconds);
         }
 
         private void ShowConfigurationViewHandler(object? obj)

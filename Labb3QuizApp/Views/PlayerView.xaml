@@ -17,7 +17,7 @@
         <!--Timer-->
         <WrapPanel HorizontalAlignment="Right" Margin="10">
         <TextBlock FontSize="30" Text="Timer: " />
-            <TextBlock FontSize="30" Text="{Binding timer}" />
+            <TextBlock FontSize="30" Text="{Binding PlayerViewModel.TimePerQuestion}" />
         </WrapPanel>
         
         <!--Play Question Panel-->
@@ -26,7 +26,7 @@
                                       TargetNullValue='No question available'}" 
                                       FontSize="40" FontWeight="Medium"/>
             <StackPanel HorizontalAlignment="Center">
-            <TextBlock Text="{Binding something}" FontSize="16" />
+                <TextBlock Text="{Binding PlayerViewModel.QuestionProgress }" FontSize="16" />
             </StackPanel>
         </StackPanel>
         <Button Grid.Column="1"  Command="{Binding MenuViewModel.NavigateToConfiguration}" FontSize="20" Height="40" Width="250" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20 10" Background="AliceBlue"  >

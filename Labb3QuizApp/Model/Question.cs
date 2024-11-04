@@ -12,7 +12,6 @@
             QuizQuestion = quizQuestion;
             CorrectAnswer = correctAnswer;
             InCorrectAnswers = new string[3] { incorrectAnswer1, incorrectAnswer2, incorrectAnswer3 };
-            ShuffleAnswers();
         }
 
         public Question()
@@ -20,7 +19,7 @@
             InCorrectAnswers = new string[3];
         }
 
-        private List<String> ShuffleAnswers()
+        private List<string> ShuffleAnswers()
         {
             var answers = InCorrectAnswers.Append(CorrectAnswer).ToList();
             return answers.OrderBy(_ => Guid.NewGuid()).ToList();
