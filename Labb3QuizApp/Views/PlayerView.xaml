@@ -4,9 +4,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Labb3QuizApp.Views"
-             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+             xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp" 
+             xmlns:converters="clr-namespace:Labb3QuizApp.Converters" 
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </UserControl.Resources>
+
     <Grid Margin="10" d:ShowGridLines="True">
         
         <Grid.RowDefinitions>
@@ -14,29 +20,58 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
+        <!--Game over Panel-->
+        <StackPanel Visibility="{Binding PlayerViewModel.IsGameOver, 
+            Converter={StaticResource BoolToVisibilityConverter}}" >
+            <TextBlock Text="{Binding PlayerViewModel.ScoreText }" 
+                       FontSize="30" 
+                       HorizontalAlignment="Center"/>
+            <Button Content="Restart Quiz" 
+                    Command="{Binding MenuViewModel.NavigateToQuiz}" />
+        </StackPanel>
+        
         <!--Timer-->
-        <WrapPanel HorizontalAlignment="Right" Margin="10">
-        <TextBlock FontSize="30" Text="Timer: " />
-            <TextBlock FontSize="30" Text="{Binding PlayerViewModel.TimePerQuestion}" />
+        <WrapPanel HorizontalAlignment="Right" 
+                   Margin="10" 
+                   Visibility="{Binding PlayerViewModel.IsQuizActive, 
+                        Converter={StaticResource BoolToVisibilityConverter}}">
+        <TextBlock FontSize="30" 
+                   Text="Timer: " />
+            <TextBlock FontSize="30" 
+                       Text="{Binding PlayerViewModel.TimePerQuestion}" />
         </WrapPanel>
         
         <!--Play Question Panel-->
-        <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Grid.Row="0" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Visibility="{Binding PlayerViewModel.IsQuizActive, 
+                        Converter={StaticResource BoolToVisibilityConverter}}">
             <TextBlock Text="{Binding PlayerViewModel.CurrentQuestion.QuizQuestion, 
-                                      TargetNullValue='No question available'}" 
-                                      FontSize="40" FontWeight="Medium"/>
+                            TargetNullValue='No question available'}" 
+                       FontSize="40" FontWeight="Medium"/>
             <StackPanel HorizontalAlignment="Center">
-                <TextBlock Text="{Binding PlayerViewModel.QuestionProgress }" FontSize="16" />
+                <TextBlock Text="{Binding PlayerViewModel.QuestionProgress }" 
+                           FontSize="16" />
             </StackPanel>
         </StackPanel>
-        <Button Grid.Column="1"  Command="{Binding MenuViewModel.NavigateToConfiguration}" FontSize="20" Height="40" Width="250" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20 10" Background="AliceBlue"  >
-            <WrapPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Button Grid.Column="1"  
+                Command="{Binding MenuViewModel.NavigateToConfiguration}" 
+                FontSize="20" 
+                Height="40" 
+                Width="250" 
+                VerticalAlignment="Top" 
+                HorizontalAlignment="Left" 
+                Margin="20 10" 
+                Background="AliceBlue">
+            <WrapPanel VerticalAlignment="Center" 
+                       HorizontalAlignment="Center">
                 <fa:IconBlock Icon="arrowLeft" Width="20" Height="20"/>
                 <TextBlock Text="Return to Configuration" Padding="5 0"/>
             </WrapPanel>
         </Button>
 
-        <Grid Grid.Row="1" d:ShowGridLines="True">
+        <Grid Grid.Row="1" d:ShowGridLines="True"  Visibility="{Binding PlayerViewModel.IsQuizActive, Converter={StaticResource BoolToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -49,46 +84,83 @@
             </Grid.RowDefinitions>
 
             <!--Play Answer Panel-->
-                   
-            <Button HorizontalAlignment="Stretch" 
-                    Grid.Row="0" 
-                    Grid.Column="1" 
-                    Content="{Binding PlayerViewModel.Answer1,Mode=OneWay}"
-                    Command="{Binding PlayerViewModel.SelectedAnswer}"
-                    CommandParameter="{Binding PlayerViewModel.Answer1}" 
-                    Margin="20" 
-                    MaxWidth="250" 
-                    MaxHeight="100"/>
-            
+
+            <Button
+                HorizontalAlignment="Stretch" 
+                Grid.Row="0" 
+                Grid.Column="1" 
+                Content="{Binding PlayerViewModel.Answer1, Mode=OneWay}"
+                Command="{Binding PlayerViewModel.SelectAnswer}"
+                CommandParameter="{Binding PlayerViewModel.Answer1}"
+                Margin="20" 
+                MaxWidth="250" 
+                MaxHeight="100">
+                <Button.Background>
+                    <MultiBinding Converter="{StaticResource BoolToBrushConverter}">
+                        <Binding Path="PlayerViewModel.SelectedAnswer" />
+                        <Binding Path="PlayerViewModel.CurrentQuestion.CorrectAnswer" />
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Content" />
+                        <Binding Path="PlayerViewModel.IsAnswered" />
+                    </MultiBinding>
+                </Button.Background>
+            </Button>
+
             <Button HorizontalAlignment="Stretch" 
                     Grid.Row="0" 
                     Grid.Column="2" 
                     Content="{Binding PlayerViewModel.Answer2, Mode=OneWay}"
-                    Command="{Binding PlayerViewModel.SelectedAnswer}"
+                    Command="{Binding PlayerViewModel.SelectAnswer}"
                     CommandParameter="{Binding PlayerViewModel.Answer2}" 
                     Margin="20" 
                     MaxWidth="250" 
-                    MaxHeight="100"/>
-            
+                    MaxHeight="100">
+                <Button.Background>
+                    <MultiBinding Converter="{StaticResource BoolToBrushConverter}">
+                        <Binding Path="PlayerViewModel.SelectedAnswer" />
+                        <Binding Path="PlayerViewModel.CurrentQuestion.CorrectAnswer" />
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Content" />
+                        <Binding Path="PlayerViewModel.IsAnswered" />
+                    </MultiBinding>
+                </Button.Background>
+            </Button>
+
             <Button HorizontalAlignment="Stretch" 
                     Grid.Row="1" 
                     Grid.Column="1" 
                     Content="{Binding PlayerViewModel.Answer3, Mode=OneWay}"
-                    Command="{Binding PlayerViewModel.SelectedAnswer}"
+                    Command="{Binding PlayerViewModel.SelectAnswer}"
                     CommandParameter="{Binding PlayerViewModel.Answer3}" 
                     Margin="20" 
                     MaxWidth="250" 
-                    MaxHeight="100"/>
-            
+                    MaxHeight="100">
+                <Button.Background>
+                    <MultiBinding Converter="{StaticResource BoolToBrushConverter}">
+                        <Binding Path="PlayerViewModel.SelectedAnswer" />
+                        <Binding Path="PlayerViewModel.CurrentQuestion.CorrectAnswer" />
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Content" />
+                        <Binding Path="PlayerViewModel.IsAnswered" />
+                    </MultiBinding>
+                </Button.Background>
+            </Button>
+
             <Button HorizontalAlignment="Stretch" 
                     Grid.Row="1" 
                     Grid.Column="2" 
                     Content="{Binding PlayerViewModel.Answer4, Mode=OneWay}"
-                    Command="{Binding PlayerViewModel.SelectedAnswer}"
+                    Command="{Binding PlayerViewModel.SelectAnswer}"
                     CommandParameter="{Binding PlayerViewModel.Answer4}" 
                     Margin="20" 
                     MaxWidth="250" 
-                    MaxHeight="100"/>
+                    MaxHeight="100">
+                <Button.Background>
+                    <MultiBinding Converter="{StaticResource BoolToBrushConverter}">
+                        <Binding Path="PlayerViewModel.SelectedAnswer" />
+                        <Binding Path="PlayerViewModel.CurrentQuestion.CorrectAnswer" />
+                        <Binding RelativeSource="{RelativeSource Self}" Path="Content" />
+                        <Binding Path="PlayerViewModel.IsAnswered" />
+                    </MultiBinding>
+                </Button.Background>
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

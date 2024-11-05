@@ -16,8 +16,60 @@ namespace Labb3QuizApp.ViewModel
         private string[] _currentAnswers;
         private int _currentQuestionCount;
         private int _totalQuestions;
-
+        private int _questionScore;
         private int _timePerQuestion;
+        private bool _isCorrectAnswer;
+        private string _selectedAnswer;
+        private bool _isAnswered;
+        private bool _isQuizActive;
+
+        public bool IsQuizActive
+        {
+            get => _isQuizActive;
+            set
+            {
+                if (_isQuizActive != value)
+                {
+                    _isQuizActive = value;
+                    RaisePropertyChanged(nameof(IsQuizActive));
+                    RaisePropertyChanged(nameof(IsGameOver));
+                }
+            }
+        }
+
+        public bool IsGameOver => !IsQuizActive;
+
+        public bool IsAnswered
+        {
+            get => _isAnswered;
+            set
+            {
+                if (_isAnswered != value)
+                {
+                    _isAnswered = value;
+                    RaisePropertyChanged(nameof(IsAnswered));
+                }
+            }
+        }
+        public bool IsCorrectAnswer
+        {
+            get => _isCorrectAnswer;
+            set
+            {
+                _isCorrectAnswer = value;
+                RaisePropertyChanged(nameof(IsCorrectAnswer));
+            }
+        }
+
+        public int QuestionScore
+        {
+            get => _questionScore;
+            set
+            {
+                _questionScore = value;
+                RaisePropertyChanged(nameof(QuestionScore));
+            }
+        }
 
         public int TimePerQuestion
         {
@@ -50,6 +102,20 @@ namespace Labb3QuizApp.ViewModel
                 RaisePropertyChanged(nameof(QuestionProgress));
             }
         }
+
+        public string SelectedAnswer
+        {
+            get => _selectedAnswer;
+            set
+            {
+                if (_selectedAnswer != value)
+                {
+                    _selectedAnswer = value;
+                    RaisePropertyChanged(nameof(SelectedAnswer));
+                }
+            }
+        }
+
         public ObservableCollection<Question> RandomizedQuestions
         {
             get => _randomizedQuestions;
@@ -60,6 +126,7 @@ namespace Labb3QuizApp.ViewModel
             }
         }
         public string QuestionProgress => $"Question {CurrentQuestionCount} out of {TotalQuestions}";
+        public string ScoreText => $"You got {QuestionScore} out of {TotalQuestions} possible!";
 
         public Question CurrentQuestion
         {
@@ -81,8 +148,7 @@ namespace Labb3QuizApp.ViewModel
         public string Answer3 => _currentAnswers?.Length > 2 ? _currentAnswers[2] : string.Empty;
         public string Answer4 => _currentAnswers?.Length > 3 ? _currentAnswers[3] : string.Empty;
 
-        public DelegateCommand SelectedAnswer { get; }
-
+        public DelegateCommand SelectAnswer { get; }
 
         public PlayerViewModel(MainWindowViewModel? mainWindowViewModel)
         {
@@ -93,7 +159,7 @@ namespace Labb3QuizApp.ViewModel
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += QuestionTimer;
 
-            SelectedAnswer = new DelegateCommand(param =>
+            SelectAnswer = new DelegateCommand(param =>
             {
                 if (param is string selectedAnswer)
                     OnSelectedAnswer(selectedAnswer);
@@ -102,14 +168,18 @@ namespace Labb3QuizApp.ViewModel
 
         private void OnSelectedAnswer(string selectedAnswer)
         {
-            if (selectedAnswer == CurrentQuestion.CorrectAnswer)
+            if (!IsAnswered)
             {
-                LoadNextQuestion();
+                SelectedAnswer = selectedAnswer;
+                IsAnswered = true;
+                IsCorrectAnswer = selectedAnswer == CurrentQuestion.CorrectAnswer;
             }
-            else
+            if (IsCorrectAnswer)
             {
-                LoadNextQuestion();
+                QuestionScore++;
+
             }
+            Task.Delay(2000).ContinueWith(_ => LoadNextQuestion());
         }
 
         private void QuestionTimer(object? sender, EventArgs e)
@@ -120,6 +190,8 @@ namespace Labb3QuizApp.ViewModel
             }
             else
             {
+                IsAnswered = true;
+                IsCorrectAnswer = false;
                 LoadNextQuestion();
                 TimePerQuestion = _mainWindowViewModel.ActivePack.TimeLimitInSeconds;
             }
@@ -127,6 +199,8 @@ namespace Labb3QuizApp.ViewModel
 
         public void StartQuiz(ObservableCollection<Question> questions, int timeLimitInSeconds)
         {
+            IsQuizActive = true;
+            Debug.WriteLine($"IsQuizActive: {IsQuizActive}");
             if (RandomizedQuestions == null || questions.Count == 0)
             {
                 return;
@@ -147,6 +221,9 @@ namespace Labb3QuizApp.ViewModel
 
         private void LoadNextQuestion()
         {
+            SelectedAnswer = null;
+            IsAnswered = false;
+
             if (RandomizedQuestions.Count > 0)
             {
                 CurrentQuestion = RandomizedQuestions[0];
@@ -154,12 +231,19 @@ namespace Labb3QuizApp.ViewModel
                 CurrentQuestionCount = TotalQuestions - RandomizedQuestions.Count;
 
                 TimePerQuestion = _mainWindowViewModel.ActivePack.TimeLimitInSeconds;
+                RaisePropertyChanged(nameof(ScoreText));
+
             }
             else
             {
                 _timer.Stop();
+                IsQuizActive = false;
+                RaisePropertyChanged(nameof(ScoreText));
+                Debug.WriteLine("No more questions left. Quiz ended.");
             }
         }
+
+
         private string[] GetShuffledAnswers(Question question)
         {
             var answers = question.InCorrectAnswers.Append(question.CorrectAnswer).ToList();
@@ -168,9 +252,11 @@ namespace Labb3QuizApp.ViewModel
 
         public void StopQuiz()
         {
+            IsQuizActive = false;
+            Debug.WriteLine($"IsQuizActive: {IsQuizActive}");
+            QuestionScore = 0;
             _timer.Stop();
             RandomizedQuestions.Clear();
-            Debug.WriteLine("Quiz stopped.");
         }
     }
 }
