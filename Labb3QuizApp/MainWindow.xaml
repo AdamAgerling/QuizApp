@@ -5,9 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:views="clr-namespace:Labb3QuizApp.Views"
         mc:Ignorable="d"
-        Title="MainWindow" MinHeight="450" MinWidth="700">
+        Title="Quiz Application" MinHeight="450" MinWidth="700">
     <Window.InputBindings>
-        <KeyBinding Key="F4" Modifiers="Alt" Command=""/>
+        <!--File-->
+        <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding ExitEnviroment}"/>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding MenuViewModel.OpenCreateNewPack}"/>
+        <KeyBinding Key="I" Modifiers="Ctrl" Command=""/>
+        <!--Edit-->
+        <KeyBinding Key="A" Modifiers="Ctrl" Command="{Binding ConfigurationViewModel.AddQuestion}"/>
+        <KeyBinding Key="R" Modifiers="Ctrl" Command="{Binding ConfigurationViewModel.RemoveQuestion}"/>
+        <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding MenuViewModel.OpenPackOptions}"/>
+        <!--View-->
+        <KeyBinding Key="P" Modifiers="Ctrl" Command="{Binding MenuViewModel.NavigateToQuiz}"/>
+        <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding MenuViewModel.NavigateToConfiguration}"/>
+        <KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding ToggleFullScreen}"/>
     </Window.InputBindings>
     <Grid>
         <Grid>

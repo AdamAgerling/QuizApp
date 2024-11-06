@@ -10,7 +10,6 @@ namespace Labb3QuizApp.ViewModel
 
         public MenuViewModel MenuViewModel { get; }
         public LocalDataService? LocalDataService { get; }
-
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; set; }
 
@@ -44,6 +43,9 @@ namespace Labb3QuizApp.ViewModel
 
         public DelegateCommand ShowPlayerView { get; }
         public DelegateCommand ShowConfigurationView { get; }
+        public DelegateCommand ExitEnviroment { get; }
+        public DelegateCommand ToggleFullScreen { get; set; }
+
 
         public QuestionPackViewModel? ActivePack
         {
@@ -65,12 +67,13 @@ namespace Labb3QuizApp.ViewModel
             MenuViewModel = new MenuViewModel(this);
             Application.Current.Exit += (s, e) => MenuViewModel.StoreLastActivePack();
 
-
             ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, LocalDataService);
             PlayerViewModel = new PlayerViewModel(this, MenuViewModel);
 
             ShowConfigurationView = new DelegateCommand(ShowConfigurationViewHandler);
             ShowPlayerView = new DelegateCommand(ShowPlayerViewHandler);
+            ExitEnviroment = new DelegateCommand(ExitEnivromentHandler);
+            ToggleFullScreen = new DelegateCommand(ToggleFullScreenHandler);
         }
 
         private void ShowPlayerViewHandler(object? obj)
@@ -91,5 +94,35 @@ namespace Labb3QuizApp.ViewModel
             PlayerViewVisibility = Visibility.Hidden;
             PlayerViewModel.StopQuiz();
         }
+
+        private void ExitEnivromentHandler(object? obj)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void ToggleFullScreenHandler(object? obj)
+        {
+            var mainWindow = Application.Current.MainWindow;
+
+            if (mainWindow == null)
+            {
+                MessageBox.Show("Huvudfönstret kunde inte hittas.");
+                return;
+            }
+
+            if (mainWindow.WindowState == WindowState.Normal)
+            {
+                mainWindow.WindowStyle = WindowStyle.None;
+                mainWindow.WindowState = WindowState.Maximized;
+            }
+            else
+            {
+                mainWindow.WindowStyle = WindowStyle.SingleBorderWindow;
+                mainWindow.WindowState = WindowState.Normal;
+            }
+        }
     }
 }
+
+
+

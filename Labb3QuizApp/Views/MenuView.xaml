@@ -19,6 +19,7 @@
                 <MenuItem Header="_File">
 
                     <MenuItem Header="_New Question Pack"  
+                              InputGestureText="Ctrl+N"
                               Icon="{fa:Icon folderPlus}"
                               Command="{Binding MenuViewModel.OpenCreateNewPack}" 
                               IsEnabled="{Binding MenuViewModel.IsEditMode}"/>
@@ -58,13 +59,16 @@
 
                     <MenuItem Header="_Add Question" 
                               Icon="{fa:Icon plus, Foreground=Green}" 
+                              InputGestureText="Ctrl+A"
                               Command="{Binding ConfigurationViewModel.AddQuestion}" IsEnabled="{Binding MenuViewModel.IsEditMode}"/>
 
                     <MenuItem Header="_Remove Question"                                
                               Icon="{fa:Icon minus, Foreground=Red}" 
+                              InputGestureText="Ctrl+R"
                               Command="{Binding ConfigurationViewModel.RemoveQuestion}" IsEnabled="{Binding MenuViewModel.IsEditMode}"/>
 
                     <MenuItem Header="_Pack Options" 
+                              InputGestureText="Ctrl+O"
                               Icon="{fa:Icon gear}" 
                               Command="{Binding MenuViewModel.OpenPackOptions}" IsEnabled="{Binding MenuViewModel.IsEditMode}"/>
                 </MenuItem>
@@ -91,7 +95,8 @@
 
                     <MenuItem Header="_Fullscreen" 
                               Icon="{fa:Icon expand}" 
-                              InputGestureText="Alt+Enter"/>
+                              InputGestureText="Alt+Enter"
+                              Command="{Binding ToggleFullScreen}"/>
                 </MenuItem>
 
             </Menu>
