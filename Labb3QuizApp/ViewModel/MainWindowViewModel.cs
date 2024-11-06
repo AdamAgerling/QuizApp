@@ -104,11 +104,6 @@ namespace Labb3QuizApp.ViewModel
         {
             var mainWindow = Application.Current.MainWindow;
 
-            if (mainWindow == null)
-            {
-                MessageBox.Show("Huvudfönstret kunde inte hittas.");
-                return;
-            }
 
             if (mainWindow.WindowState == WindowState.Normal)
             {
