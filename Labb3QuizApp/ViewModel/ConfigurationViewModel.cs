@@ -46,7 +46,7 @@ namespace Labb3QuizApp.ViewModel
         {
             MenuViewModel = menuViewModel;
             _mainWindowViewModel = mainWindowViewModel;
-            _localDataService = localDataService ?? new LocalDataService();
+            _localDataService = localDataService ?? new LocalDataService(menuViewModel);
 
             var loadedQuestionPacks = _localDataService?.LoadQuestionPacks();
 

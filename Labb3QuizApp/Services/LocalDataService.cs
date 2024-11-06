@@ -1,4 +1,5 @@
 ﻿using Labb3QuizApp.Model;
+using Labb3QuizApp.ViewModel;
 using System.IO;
 using System.Text.Json;
 
@@ -8,13 +9,17 @@ namespace Labb3QuizApp.Services
     internal class LocalDataService
     {
         private readonly string filePath = "Questionpacks.json";
-
+        private MenuViewModel? _menuViewModel;
         private JsonSerializerOptions options = new JsonSerializerOptions
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true,
             IncludeFields = true
         };
+
+        public LocalDataService(MenuViewModel menuViewModel)
+        {
+            _menuViewModel = menuViewModel;
+        }
 
         public void SaveQuestions(List<Question> questions, string packName)
         {
@@ -48,6 +53,11 @@ namespace Labb3QuizApp.Services
                 }
                 existingPacks.Add(newPack);
             }
+            if (existingPacks.Count == 0)
+            {
+                var defaultPack = new QuestionPack("Default Pack", Difficulty.Easy, 30);
+                existingPacks.Add(defaultPack);
+            }
             var json = JsonSerializer.Serialize(new { QuestionPacks = existingPacks }, options);
             File.WriteAllText(filePath, json);
         }
@@ -58,24 +68,36 @@ namespace Labb3QuizApp.Services
             {
                 var json = File.ReadAllText(filePath);
                 var result = JsonSerializer.Deserialize<RootObject>(json, options);
-                return result?.QuestionPacks ?? new List<QuestionPack>();
-            }
-            catch (FileNotFoundException)
-            {
-                return new List<QuestionPack>();
+                if (result == null || result.QuestionPacks == null)
+                {
+                    return new List<QuestionPack>();
+                }
+                return result.QuestionPacks;
             }
             catch (JsonException ex)
             {
-                Console.WriteLine($"JSON Error: {ex.Message}");
-                return new List<QuestionPack>();
+
+                return new List<QuestionPack> { new QuestionPack("Default Pack", Difficulty.Easy, 30) };
+            }
+            catch (FileNotFoundException)
+            {
+                return new List<QuestionPack> { new QuestionPack("Default Pack", Difficulty.Easy, 30) };
             }
         }
-        public List<Question> LoadQuestionsInPack(string packName)
+        public void RemoveQuestionPack(List<QuestionPack> packs, QuestionPack packToRemove)
         {
-            var json = File.ReadAllText($"{packName}_questions.json");
-            return JsonSerializer.Deserialize<List<Question>>(json, options) ?? new List<Question>();
-        }
 
+            if (packToRemove != null && packToRemove.Name != "Default Pack")
+            {
+                packs.Remove(packToRemove);
+                var json = JsonSerializer.Serialize(new { QuestionPacks = packs }, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(filePath, json);
+            }
+            else
+            {
+                Console.WriteLine("Default Pack cannot be removed.");
+            }
+        }
         public class RootObject
         {
             public List<QuestionPack> QuestionPacks { get; set; } = new List<QuestionPack>();

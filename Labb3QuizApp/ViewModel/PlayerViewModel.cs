@@ -1,7 +1,6 @@
 ﻿using Labb3QuizApp.Command;
 using Labb3QuizApp.Model;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows.Threading;
 
 namespace Labb3QuizApp.ViewModel
@@ -9,6 +8,7 @@ namespace Labb3QuizApp.ViewModel
     class PlayerViewModel : ViewModelBase
     {
         private readonly MainWindowViewModel? _mainWindowViewModel;
+        private readonly MenuViewModel? _menuViewModel;
         private readonly Random _random = new Random();
         private DispatcherTimer _timer;
         private ObservableCollection<Question> _randomizedQuestions;
@@ -150,9 +150,10 @@ namespace Labb3QuizApp.ViewModel
 
         public DelegateCommand SelectAnswer { get; }
 
-        public PlayerViewModel(MainWindowViewModel? mainWindowViewModel)
+        public PlayerViewModel(MainWindowViewModel? mainWindowViewModel, MenuViewModel menuViewModel)
         {
             _mainWindowViewModel = mainWindowViewModel;
+            _menuViewModel = menuViewModel;
             _randomizedQuestions = new ObservableCollection<Question>();
 
             _timer = new DispatcherTimer();
@@ -199,8 +200,9 @@ namespace Labb3QuizApp.ViewModel
 
         public void StartQuiz(ObservableCollection<Question> questions, int timeLimitInSeconds)
         {
+            _menuViewModel.IsPlayMode = true;
             IsQuizActive = true;
-            Debug.WriteLine($"IsQuizActive: {IsQuizActive}");
+
             if (RandomizedQuestions == null || questions.Count == 0)
             {
                 return;
@@ -239,7 +241,6 @@ namespace Labb3QuizApp.ViewModel
                 _timer.Stop();
                 IsQuizActive = false;
                 RaisePropertyChanged(nameof(ScoreText));
-                Debug.WriteLine("No more questions left. Quiz ended.");
             }
         }
 
@@ -252,8 +253,8 @@ namespace Labb3QuizApp.ViewModel
 
         public void StopQuiz()
         {
+            _menuViewModel.IsPlayMode = false;
             IsQuizActive = false;
-            Debug.WriteLine($"IsQuizActive: {IsQuizActive}");
             QuestionScore = 0;
             _timer.Stop();
             RandomizedQuestions.Clear();

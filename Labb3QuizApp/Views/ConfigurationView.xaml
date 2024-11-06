@@ -86,7 +86,16 @@
 
             </StackPanel>
         </Grid>
-        <Button Grid.Column="1"  Command="{Binding MenuViewModel.NavigateToQuiz}" FontSize="20" Height="40" Width="80" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="20 10" Background="Green"  >
+        <Button Grid.Column="1"
+                IsEnabled="{Binding MenuViewModel.HasQuestions}" 
+                Command="{Binding MenuViewModel.NavigateToQuiz}" 
+                FontSize="20" 
+                Height="40" 
+                Width="80" 
+                VerticalAlignment="Bottom" 
+                HorizontalAlignment="Right" 
+                Margin="20 10" 
+                Background="Green"  >
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBlock Text="Play" Padding="5 0"/>
                 <fa:IconBlock Icon="play" Width="20" Height="20"/>

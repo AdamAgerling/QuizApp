@@ -1,7 +1,5 @@
 ﻿using Labb3QuizApp.Command;
-using Labb3QuizApp.Model;
 using Labb3QuizApp.Services;
-using System.Diagnostics;
 using System.Windows;
 
 namespace Labb3QuizApp.ViewModel
@@ -67,12 +65,9 @@ namespace Labb3QuizApp.ViewModel
             MenuViewModel = new MenuViewModel(this);
             Application.Current.Exit += (s, e) => MenuViewModel.StoreLastActivePack();
 
-            if (ActivePack == null)
-            {
-                ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack"));
-            }
+
             ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, LocalDataService);
-            PlayerViewModel = new PlayerViewModel(this);
+            PlayerViewModel = new PlayerViewModel(this, MenuViewModel);
 
             ShowConfigurationView = new DelegateCommand(ShowConfigurationViewHandler);
             ShowPlayerView = new DelegateCommand(ShowPlayerViewHandler);
@@ -82,7 +77,6 @@ namespace Labb3QuizApp.ViewModel
         {
             if (ActivePack == null || ActivePack.Questions.Count == 0)
             {
-                Debug.WriteLine("No ActivePack or no questions in ActivePack.");
                 return;
             }
 

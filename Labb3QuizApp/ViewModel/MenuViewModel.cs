@@ -5,6 +5,7 @@ using Labb3QuizApp.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Labb3QuizApp.ViewModel
 {
@@ -13,11 +14,19 @@ namespace Labb3QuizApp.ViewModel
         private readonly MainWindowViewModel? _mainWindowViewModel;
         private QuestionPackViewModel? _activePack;
         private LocalDataService _localDataService;
+        private bool _isPlayMode;
+        private QuestionPack _firstLoadActivePack;
+        private bool _hasQuestions;
+
+        public bool IsEditMode => !IsPlayMode;
+
+
         public DelegateCommand NavigateToQuiz { get; }
         public DelegateCommand NavigateToConfiguration { get; }
         public DelegateCommand OpenCreateNewPack { get; }
         public DelegateCommand OpenPackOptions { get; }
         public DelegateCommand SelectQuestionPack { get; }
+        public DelegateCommand DeleteActivePack { get; }
         public ObservableCollection<QuestionPackViewModel> QuestionPacks { get; set; } = new ObservableCollection<QuestionPackViewModel>();
 
         public QuestionPackViewModel? ActivePack
@@ -27,15 +36,45 @@ namespace Labb3QuizApp.ViewModel
             {
                 _activePack = value;
                 RaisePropertyChanged(nameof(ActivePack));
+                HasQuestions = _activePack?.Questions.Count > 0;
+            }
+        }
+        public bool HasQuestions
+        {
+            get => _hasQuestions;
+            set
+            {
+                if (_hasQuestions != value)
+                {
+                    _hasQuestions = value;
+                    RaisePropertyChanged(nameof(HasQuestions));
+                }
             }
         }
 
+        public bool IsPlayMode
+        {
+            get => _isPlayMode;
+            set
+            {
+                if (_isPlayMode != value)
+                {
+                    _isPlayMode = value;
+                    RaisePropertyChanged(nameof(IsPlayMode));
+                    RaisePropertyChanged(nameof(IsEditMode));
+                }
+            }
+        }
         public MenuViewModel(MainWindowViewModel? mainWindowViewModel)
         {
             _mainWindowViewModel = mainWindowViewModel;
+            _localDataService = new LocalDataService(this);
             OpenCreateNewPack = new DelegateCommand(CreateNewPackDialog);
             OpenPackOptions = new DelegateCommand(PackOptionsDialog);
             SelectQuestionPack = new DelegateCommand(SelectPack);
+            DeleteActivePack = new DelegateCommand(RemoveActivePack);
+
+
             NavigateToConfiguration = new DelegateCommand(obj =>
             {
                 _mainWindowViewModel?.ShowConfigurationView.Execute(obj);
@@ -46,6 +85,14 @@ namespace Labb3QuizApp.ViewModel
             });
             LoadQuestionPacks();
             LoadLastActivePack();
+
+            if (ActivePack?.Questions != null)
+            {
+                ActivePack.Questions.CollectionChanged += (s, e) =>
+                {
+                    HasQuestions = ActivePack.Questions.Count > 0;
+                };
+            }
         }
 
         private void CreateNewPackDialog(object? obj)
@@ -71,7 +118,6 @@ namespace Labb3QuizApp.ViewModel
         {
             if (obj is QuestionPackViewModel selectedPack)
             {
-                Debug.WriteLine($"Selected Pack Name: {selectedPack.Name}");
                 ActivePack = selectedPack;
                 _mainWindowViewModel.ActivePack = selectedPack;
             }
@@ -81,6 +127,53 @@ namespace Labb3QuizApp.ViewModel
             }
         }
 
+        private void RemoveActivePack(object? obj)
+        {
+            DialogResult dialogResult = MessageBox.Show("Do you really want to delete the current active pack? ",
+                "Remove Pack", MessageBoxButtons.YesNo);
+
+            if (dialogResult == DialogResult.Yes)
+            {
+                if (obj is QuestionPackViewModel selectedPack)
+                {
+                    if (QuestionPacks.Contains(selectedPack))
+                    {
+                        if (selectedPack.Name == "Default Pack")
+                        {
+                            DialogResult dialogNotPossible =
+                                MessageBox.Show("You can't remove the Default Pack, you can only remove the questions inside it.",
+                                "Not possible", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            QuestionPacks.Remove(selectedPack);
+                            selectedPack.Questions.Clear();
+                            _localDataService.RemoveQuestionPack(QuestionPacks.Select(p => p.QuestionPack).ToList(), selectedPack.QuestionPack);
+                        }
+
+                        if (selectedPack == ActivePack)
+                        {
+                            ActivePack = QuestionPacks.FirstOrDefault(p => p.Name == "Default Pack") ?? CreateDefaultPack();
+                            _mainWindowViewModel.ActivePack = ActivePack;
+                        }
+
+                        if (QuestionPacks.Count == 0 || !QuestionPacks.Any(p => p.Name == "Default Pack"))
+                        {
+                            var defaultPack = CreateDefaultPack();
+                            QuestionPacks.Add(defaultPack);
+                            ActivePack = defaultPack;
+                            _mainWindowViewModel.ActivePack = ActivePack;
+                        }
+                    }
+                }
+            }
+        }
+
+        private QuestionPackViewModel CreateDefaultPack()
+        {
+            var defaultPack = new QuestionPack("Default Pack", Difficulty.Easy, 30);
+            return new QuestionPackViewModel(defaultPack);
+        }
         private void PackOptionsDialog(object? obj)
         {
             PackOptionsDialog packOptionsDialog = new();
@@ -93,17 +186,26 @@ namespace Labb3QuizApp.ViewModel
 
         private void LoadQuestionPacks()
         {
-            var dataService = new LocalDataService();
+            var dataService = new LocalDataService(this);
+
             var packs = dataService.LoadQuestionPacks();
+
             foreach (var pack in packs)
             {
-                QuestionPacks.Add(new QuestionPackViewModel(pack));
+                var packViewModel = new QuestionPackViewModel(pack);
+                QuestionPacks.Add(packViewModel);
+            }
+
+            if (ActivePack == null && QuestionPacks.Count > 0)
+            {
+                ActivePack = QuestionPacks.First();
+                _mainWindowViewModel.ActivePack = ActivePack;
             }
         }
 
         public void SaveCurrentPacks()
         {
-            var dataService = new LocalDataService();
+            var dataService = new LocalDataService(this);
             var existingPacks = dataService.LoadQuestionPacks();
 
             var updatedPacks = QuestionPacks.Select(p => p.QuestionPack).ToList();
