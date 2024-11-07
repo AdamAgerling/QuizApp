@@ -8,7 +8,7 @@ namespace Labb3QuizApp.Services
 
     internal class LocalDataService
     {
-        private readonly string filePath = "Questionpacks.json";
+        private readonly string filePath;
         private MenuViewModel? _menuViewModel;
         private JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -19,6 +19,9 @@ namespace Labb3QuizApp.Services
         public LocalDataService(MenuViewModel menuViewModel)
         {
             _menuViewModel = menuViewModel;
+            var appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "QuizApp");
+            Directory.CreateDirectory(appDataFolder);
+            filePath = Path.Combine(appDataFolder, "Questionpacks.json");
         }
 
         public void SaveQuestions(List<Question> questions, string packName)
