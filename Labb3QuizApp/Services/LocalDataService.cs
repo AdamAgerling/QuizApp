@@ -74,11 +74,7 @@ namespace Labb3QuizApp.Services
                 }
                 return result.QuestionPacks;
             }
-            catch (JsonException ex)
-            {
 
-                return new List<QuestionPack> { new QuestionPack("Default Pack", Difficulty.Easy, 30) };
-            }
             catch (FileNotFoundException)
             {
                 return new List<QuestionPack> { new QuestionPack("Default Pack", Difficulty.Easy, 30) };

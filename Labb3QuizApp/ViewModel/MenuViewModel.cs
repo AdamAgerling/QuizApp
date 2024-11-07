@@ -15,11 +15,9 @@ namespace Labb3QuizApp.ViewModel
         private QuestionPackViewModel? _activePack;
         private LocalDataService _localDataService;
         private bool _isPlayMode;
-        private QuestionPack _firstLoadActivePack;
         private bool _hasQuestions;
 
         public bool IsEditMode => !IsPlayMode;
-
 
         public DelegateCommand NavigateToQuiz { get; }
         public DelegateCommand NavigateToConfiguration { get; }

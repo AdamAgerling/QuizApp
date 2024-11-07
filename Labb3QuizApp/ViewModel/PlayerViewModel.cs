@@ -169,6 +169,7 @@ namespace Labb3QuizApp.ViewModel
 
         private void OnSelectedAnswer(string selectedAnswer)
         {
+            _timer.Stop();
             if (!IsAnswered)
             {
                 SelectedAnswer = selectedAnswer;
@@ -178,7 +179,6 @@ namespace Labb3QuizApp.ViewModel
             if (IsCorrectAnswer)
             {
                 QuestionScore++;
-
             }
             Task.Delay(2000).ContinueWith(_ => LoadNextQuestion());
         }
@@ -225,7 +225,7 @@ namespace Labb3QuizApp.ViewModel
         {
             SelectedAnswer = null;
             IsAnswered = false;
-
+            _timer.Start();
             if (RandomizedQuestions.Count > 0)
             {
                 CurrentQuestion = RandomizedQuestions[0];
@@ -234,7 +234,6 @@ namespace Labb3QuizApp.ViewModel
 
                 TimePerQuestion = _mainWindowViewModel.ActivePack.TimeLimitInSeconds;
                 RaisePropertyChanged(nameof(ScoreText));
-
             }
             else
             {
