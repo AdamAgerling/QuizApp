@@ -118,6 +118,3 @@ namespace Labb3QuizApp.ViewModel
         }
     }
 }
-
-
-

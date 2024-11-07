@@ -45,10 +45,11 @@
                               CommandParameter="{Binding MenuViewModel.ActivePack}"
                               IsEnabled="{Binding MenuViewModel.IsEditMode}"/>
 
-                    <MenuItem Header="_Import Questions" 
+                    <!--<MenuItem Header="_Import Questions" 
                               Icon="{fa:Icon cloudArrowDown}" 
+                              Command="{Binding MenuViewModel.ImportQuestionsDialog}" 
                               InputGestureText="Ctrl+I"
-                              IsEnabled="{Binding MenuViewModel.IsEditMode}"/>
+                              IsEnabled="{Binding MenuViewModel.IsEditMode}"/>-->
 
                     <MenuItem Header="E_xit" 
                               Icon="{fa:Icon doorOpen}" 

@@ -16,7 +16,8 @@ namespace Labb3QuizApp.ViewModel
         private LocalDataService _localDataService;
         private bool _isPlayMode;
         private bool _hasQuestions;
-
+        private readonly string appDataFolder;
+        private readonly string lastActivePackPath;
         public bool IsEditMode => !IsPlayMode;
 
         public DelegateCommand NavigateToQuiz { get; }
@@ -32,11 +33,35 @@ namespace Labb3QuizApp.ViewModel
             get => _activePack;
             set
             {
-                _activePack = value;
-                RaisePropertyChanged(nameof(ActivePack));
-                HasQuestions = _activePack?.Questions.Count > 0;
+                if (_activePack != value)
+                {
+                    if (_activePack?.Questions != null)
+                    {
+                        _activePack.Questions.CollectionChanged -= QuestionsCollectionChanged;
+                    }
+                    _activePack = value;
+                    RaisePropertyChanged(nameof(ActivePack));
+
+
+                    if (_activePack?.Questions != null)
+                    {
+                        _activePack.Questions.CollectionChanged += QuestionsCollectionChanged;
+                    }
+                    CheckHasQuestions();
+                }
             }
         }
+
+        private void QuestionsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            CheckHasQuestions();
+        }
+
+        private void CheckHasQuestions()
+        {
+            HasQuestions = _activePack?.Questions.Count > 0;
+        }
+
         public bool HasQuestions
         {
             get => _hasQuestions;
@@ -67,6 +92,10 @@ namespace Labb3QuizApp.ViewModel
         {
             _mainWindowViewModel = mainWindowViewModel;
             _localDataService = new LocalDataService(this);
+            appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "QuizApp");
+            Directory.CreateDirectory(appDataFolder);
+            lastActivePackPath = Path.Combine(appDataFolder, "LastActivePack.txt");
+
             OpenCreateNewPack = new DelegateCommand(CreateNewPackDialog);
             OpenPackOptions = new DelegateCommand(PackOptionsDialog);
             SelectQuestionPack = new DelegateCommand(SelectPack);
@@ -81,8 +110,7 @@ namespace Labb3QuizApp.ViewModel
             {
                 _mainWindowViewModel?.ShowPlayerView.Execute(obj);
             });
-            LoadQuestionPacks();
-            LoadLastActivePack();
+            _ = LoadAsync();
 
             if (ActivePack?.Questions != null)
             {
@@ -93,7 +121,7 @@ namespace Labb3QuizApp.ViewModel
             }
         }
 
-        private void CreateNewPackDialog(object? obj)
+        private async void CreateNewPackDialog(object? obj)
         {
             CreateNewPackDialog createNewPackDialog = new();
             var viewModel = new CreateNewPackDialogViewModel();
@@ -107,7 +135,7 @@ namespace Labb3QuizApp.ViewModel
                 var newPackViewModel = new QuestionPackViewModel(newPack);
                 QuestionPacks.Add(newPackViewModel);
                 ActivePack = newPackViewModel;
-                SaveCurrentPacks();
+                await SaveCurrentPacks();
                 SelectPack(newPackViewModel);
             }
         }
@@ -118,6 +146,9 @@ namespace Labb3QuizApp.ViewModel
             {
                 ActivePack = selectedPack;
                 _mainWindowViewModel.ActivePack = selectedPack;
+
+                RaisePropertyChanged(nameof(ActivePack));
+                RaisePropertyChanged(nameof(HasQuestions));
             }
             else
             {
@@ -182,11 +213,11 @@ namespace Labb3QuizApp.ViewModel
             packOptionsDialog.ShowDialog();
         }
 
-        private void LoadQuestionPacks()
+        private async Task LoadQuestionPacks()
         {
             var dataService = new LocalDataService(this);
 
-            var packs = dataService.LoadQuestionPacks();
+            var packs = await dataService.LoadQuestionPacks();
 
             foreach (var pack in packs)
             {
@@ -201,10 +232,10 @@ namespace Labb3QuizApp.ViewModel
             }
         }
 
-        public void SaveCurrentPacks()
+        public async Task SaveCurrentPacks()
         {
             var dataService = new LocalDataService(this);
-            var existingPacks = dataService.LoadQuestionPacks();
+            var existingPacks = await dataService.LoadQuestionPacks();
 
             var updatedPacks = QuestionPacks.Select(p => p.QuestionPack).ToList();
             foreach (var updatedPack in updatedPacks)
@@ -216,21 +247,21 @@ namespace Labb3QuizApp.ViewModel
                 }
                 existingPacks.Add(updatedPack);
             }
-            dataService.SaveQuestionPacks(existingPacks);
+            await dataService.SaveQuestionPacks(existingPacks);
         }
 
-        public void StoreLastActivePack()
+        public async Task StoreLastActivePack()
         {
             if (ActivePack?.Name != null)
             {
-                File.WriteAllText("LastActivePack.txt", ActivePack.Name);
+                await File.WriteAllTextAsync(lastActivePackPath, ActivePack.Name);
             }
         }
-        private void LoadLastActivePack()
+        private async Task LoadLastActivePack()
         {
-            if (File.Exists("LastActivePack.txt"))
+            if (File.Exists(lastActivePackPath))
             {
-                var lastPackName = File.ReadAllText("LastActivePack.txt");
+                var lastPackName = await File.ReadAllTextAsync(lastActivePackPath);
                 var pack = QuestionPacks.FirstOrDefault(p => p.Name == lastPackName);
                 if (pack != null)
                 {
@@ -238,6 +269,11 @@ namespace Labb3QuizApp.ViewModel
                     _mainWindowViewModel.ActivePack = pack;
                 }
             }
+        }
+        private async Task LoadAsync()
+        {
+            await LoadQuestionPacks();
+            await LoadLastActivePack();
         }
     }
 }

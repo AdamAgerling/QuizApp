@@ -24,9 +24,9 @@ namespace Labb3QuizApp.Services
             filePath = Path.Combine(appDataFolder, "Questionpacks.json");
         }
 
-        public void SaveQuestions(List<Question> questions, string packName)
+        public async Task SaveQuestions(List<Question> questions, string packName)
         {
-            var existingPacks = LoadQuestionPacks();
+            var existingPacks = await LoadQuestionPacks();
 
             var packToUpdate = existingPacks.FirstOrDefault(p => p.Name == packName);
             if (packToUpdate != null)
@@ -43,9 +43,9 @@ namespace Labb3QuizApp.Services
             File.WriteAllText(filePath, json);
         }
 
-        public void SaveQuestionPacks(List<QuestionPack> newPacks)
+        public async Task SaveQuestionPacks(List<QuestionPack> newPacks)
         {
-            var existingPacks = LoadQuestionPacks();
+            var existingPacks = await LoadQuestionPacks();
 
             foreach (var newPack in newPacks)
             {
@@ -62,14 +62,14 @@ namespace Labb3QuizApp.Services
                 existingPacks.Add(defaultPack);
             }
             var json = JsonSerializer.Serialize(new { QuestionPacks = existingPacks }, options);
-            File.WriteAllText(filePath, json);
+            await File.WriteAllTextAsync(filePath, json);
         }
 
-        public List<QuestionPack> LoadQuestionPacks()
+        public async Task<List<QuestionPack>> LoadQuestionPacks()
         {
             try
             {
-                var json = File.ReadAllText(filePath);
+                var json = await File.ReadAllTextAsync(filePath);
                 var result = JsonSerializer.Deserialize<RootObject>(json, options);
                 if (result == null || result.QuestionPacks == null)
                 {
@@ -83,14 +83,14 @@ namespace Labb3QuizApp.Services
                 return new List<QuestionPack> { new QuestionPack("Default Pack", Difficulty.Easy, 30) };
             }
         }
-        public void RemoveQuestionPack(List<QuestionPack> packs, QuestionPack packToRemove)
+        public async Task RemoveQuestionPack(List<QuestionPack> packs, QuestionPack packToRemove)
         {
 
             if (packToRemove != null && packToRemove.Name != "Default Pack")
             {
                 packs.Remove(packToRemove);
                 var json = JsonSerializer.Serialize(new { QuestionPacks = packs }, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(filePath, json);
+                await File.WriteAllTextAsync(filePath, json);
             }
             else
             {

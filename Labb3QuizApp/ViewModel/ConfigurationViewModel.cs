@@ -48,7 +48,15 @@ namespace Labb3QuizApp.ViewModel
             _mainWindowViewModel = mainWindowViewModel;
             _localDataService = localDataService ?? new LocalDataService(menuViewModel);
 
-            var loadedQuestionPacks = _localDataService?.LoadQuestionPacks();
+            InitializeDataAsync();
+
+            AddQuestion = new DelegateCommand(AddQuestionHandler);
+            RemoveQuestion = new DelegateCommand(RemoveQuestionHandler, CanRemoveQuestion);
+        }
+
+        private async void InitializeDataAsync()
+        {
+            var loadedQuestionPacks = await _localDataService.LoadQuestionPacks();
 
             if (loadedQuestionPacks != null)
             {
@@ -64,41 +72,50 @@ namespace Labb3QuizApp.ViewModel
                     }
                 }
             }
-            AddQuestion = new DelegateCommand(AddQuestionHandler);
-            RemoveQuestion = new DelegateCommand(RemoveQuestionHandler, CanRemoveQuestion);
         }
-        private void RemoveQuestionHandler(object? obj)
+
+        private async void RemoveQuestionHandler(object? obj)
         {
             if (SelectedQuestion != null)
             {
                 ActivePack?.Questions.Remove(SelectedQuestion);
                 SelectedQuestion = null;
-                _localDataService?.SaveQuestions(ActivePack?.Questions.ToList(), ActivePack?.Name);
+                if (_localDataService != null && ActivePack?.Questions != null && ActivePack.Name != null)
+                {
+                    await _localDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
+                }
             }
         }
         private bool CanRemoveQuestion(object? obj) => SelectedQuestion != null;
 
-        private void AddQuestionHandler(object? obj)
+        private async void AddQuestionHandler(object? obj)
         {
             var newQuestion = new Question("New Question", "", "", "", "");
             ActivePack?.Questions.Add(newQuestion);
             SelectedQuestion = newQuestion;
-            _localDataService?.SaveQuestions(ActivePack?.Questions.ToList(), ActivePack?.Name);
-        }
-        public void UpdateQuestion()
-        {
-            if (ActivePack?.Questions != null)
+            RaisePropertyChanged(nameof(ActivePack.Questions));
+            if (_localDataService != null && ActivePack?.Questions != null && ActivePack.Name != null)
             {
-                _localDataService?.SaveQuestions(ActivePack?.Questions.ToList(), ActivePack?.Name);
+                await _localDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
             }
         }
-        public void UpdatePack()
+
+        public async Task UpdateQuestion()
+        {
+            if (ActivePack?.Questions != null && ActivePack.Name != null)
+            {
+                await _localDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
+            }
+        }
+
+        public async Task UpdatePack()
         {
             if (ActivePack == null || ActivePack.Name == null)
             {
                 return;
             }
-            var packs = _localDataService?.LoadQuestionPacks();
+
+            var packs = await _localDataService.LoadQuestionPacks();
 
             if (packs == null)
             {
@@ -112,7 +129,8 @@ namespace Labb3QuizApp.ViewModel
                 packToUpdate.Difficulty = ActivePack.Difficulty;
                 packToUpdate.TimeLimitInSeconds = ActivePack.TimeLimitInSeconds;
 
-                _localDataService?.SaveQuestionPacks(packs);
+                RaisePropertyChanged(nameof(ActivePack));
+                await _localDataService.SaveQuestionPacks(packs);
             }
         }
     }
