@@ -48,9 +48,9 @@
                     VerticalAlignment="Center"
                     Visibility="{Binding PlayerViewModel.IsQuizActive,
                     Converter={StaticResource BoolToVisibilityConverter}}">
-            <TextBlock Text="{Binding PlayerViewModel.CurrentQuestion.QuizQuestion,
+            <TextBlock TextWrapping="Wrap" Text="{Binding PlayerViewModel.CurrentQuestion.QuizQuestion,
                        TargetNullValue='No question available'}"
-                       FontSize="40" FontWeight="Medium"/>
+                       FontSize="28" FontWeight="Medium"/>
             <StackPanel HorizontalAlignment="Center">
                 <TextBlock Text="{Binding PlayerViewModel.QuestionProgress }"
                            FontSize="16" />
