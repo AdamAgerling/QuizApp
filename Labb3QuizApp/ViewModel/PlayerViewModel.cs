@@ -193,7 +193,9 @@ namespace Labb3QuizApp.ViewModel
             {
                 IsAnswered = true;
                 IsCorrectAnswer = false;
-                LoadNextQuestion();
+                SelectedAnswer = CurrentQuestion.CorrectAnswer;
+                _timer.Stop();
+                LoadNextQuestionOnTimeOut();
                 TimePerQuestion = _mainWindowViewModel.ActivePack.TimeLimitInSeconds;
             }
         }
@@ -243,6 +245,11 @@ namespace Labb3QuizApp.ViewModel
             }
         }
 
+        private async void LoadNextQuestionOnTimeOut()
+        {
+            await Task.Delay(2000);
+            LoadNextQuestion();
+        }
 
         private string[] GetShuffledAnswers(Question question)
         {

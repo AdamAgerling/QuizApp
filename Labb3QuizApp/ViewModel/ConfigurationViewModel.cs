@@ -48,13 +48,13 @@ namespace Labb3QuizApp.ViewModel
             _mainWindowViewModel = mainWindowViewModel;
             _localDataService = localDataService ?? new LocalDataService(menuViewModel);
 
-            InitializeDataAsync();
+            LoadDataAsync();
 
             AddQuestion = new DelegateCommand(AddQuestionHandler);
             RemoveQuestion = new DelegateCommand(RemoveQuestionHandler, CanRemoveQuestion);
         }
 
-        private async void InitializeDataAsync()
+        private async void LoadDataAsync()
         {
             var loadedQuestionPacks = await _localDataService.LoadQuestionPacks();
 
