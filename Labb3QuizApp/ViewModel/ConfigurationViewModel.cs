@@ -6,7 +6,7 @@ namespace Labb3QuizApp.ViewModel
     class ConfigurationViewModel : ViewModelBase
     {
         private readonly MainWindowViewModel? _mainWindowViewModel;
-        private readonly LocalDataService? _localDataService;
+        private readonly MongoDataService? _mongoDataService;
 
         public List<Difficulty> SelectDifficulty { get; } = Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>().ToList();
 
@@ -42,11 +42,11 @@ namespace Labb3QuizApp.ViewModel
             }
         }
 
-        public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel, MenuViewModel? menuViewModel, LocalDataService? localDataService)
+        public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel, MenuViewModel? menuViewModel, MongoDataService? mongoDataService)
         {
             MenuViewModel = menuViewModel;
             _mainWindowViewModel = mainWindowViewModel;
-            _localDataService = localDataService ?? new LocalDataService(menuViewModel);
+            _mongoDataService = mongoDataService;
 
             LoadDataAsync();
 
@@ -56,7 +56,7 @@ namespace Labb3QuizApp.ViewModel
 
         private async void LoadDataAsync()
         {
-            var loadedQuestionPacks = await _localDataService.LoadQuestionPacks();
+            var loadedQuestionPacks = await _mongoDataService.LoadQuestionPacks();
 
             if (loadedQuestionPacks != null)
             {
@@ -80,9 +80,9 @@ namespace Labb3QuizApp.ViewModel
             {
                 ActivePack?.Questions.Remove(SelectedQuestion);
                 SelectedQuestion = null;
-                if (_localDataService != null && ActivePack?.Questions != null && ActivePack.Name != null)
+                if (_mongoDataService != null && ActivePack?.Questions != null && ActivePack.Name != null)
                 {
-                    await _localDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
+                    await _mongoDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
                 }
             }
         }
@@ -94,9 +94,9 @@ namespace Labb3QuizApp.ViewModel
             ActivePack?.Questions.Add(newQuestion);
             SelectedQuestion = newQuestion;
             RaisePropertyChanged(nameof(ActivePack.Questions));
-            if (_localDataService != null && ActivePack?.Questions != null && ActivePack.Name != null)
+            if (_mongoDataService != null && ActivePack?.Questions != null && ActivePack.Name != null)
             {
-                await _localDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
+                await _mongoDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Labb3QuizApp.ViewModel
         {
             if (ActivePack?.Questions != null && ActivePack.Name != null)
             {
-                await _localDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
+                await _mongoDataService.SaveQuestions(ActivePack.Questions.ToList(), ActivePack.Name);
             }
         }
 
@@ -115,7 +115,7 @@ namespace Labb3QuizApp.ViewModel
                 return;
             }
 
-            var packs = await _localDataService.LoadQuestionPacks();
+            var packs = await _mongoDataService.LoadQuestionPacks();
 
             if (packs == null)
             {
@@ -130,7 +130,7 @@ namespace Labb3QuizApp.ViewModel
                 packToUpdate.TimeLimitInSeconds = ActivePack.TimeLimitInSeconds;
 
                 RaisePropertyChanged(nameof(ActivePack));
-                await _localDataService.SaveQuestionPacks(packs);
+                await _mongoDataService.SaveQuestionPacks(packs);
             }
         }
     }

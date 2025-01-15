@@ -1,5 +1,6 @@
 ﻿using Labb3QuizApp.Command;
 using Labb3QuizApp.Services;
+using System.Configuration;
 using System.Windows;
 
 namespace Labb3QuizApp.ViewModel
@@ -7,9 +8,10 @@ namespace Labb3QuizApp.ViewModel
     class MainWindowViewModel : ViewModelBase
     {
         private QuestionPackViewModel? _activePack;
+        private readonly MongoDataService _mongoDataService;
 
         public MenuViewModel MenuViewModel { get; }
-        public LocalDataService? LocalDataService { get; }
+
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; set; }
 
@@ -64,10 +66,15 @@ namespace Labb3QuizApp.ViewModel
 
         public MainWindowViewModel()
         {
-            MenuViewModel = new MenuViewModel(this);
+            string connectionString = ConfigurationManager.AppSettings["MongoConnectionString"];
+            string databaseName = ConfigurationManager.AppSettings["MongoDatabaseName"];
+
+            _mongoDataService = new MongoDataService(connectionString, databaseName);
+
+            MenuViewModel = new MenuViewModel(this, _mongoDataService);
             Application.Current.Exit += (s, e) => MenuViewModel.StoreLastActivePack();
 
-            ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, LocalDataService);
+            ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, _mongoDataService);
             PlayerViewModel = new PlayerViewModel(this, MenuViewModel);
 
             ShowConfigurationView = new DelegateCommand(ShowConfigurationViewHandler);

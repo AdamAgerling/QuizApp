@@ -3,6 +3,7 @@ using Labb3QuizApp.Dialogs;
 using Labb3QuizApp.Model;
 using Labb3QuizApp.Services;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -13,7 +14,9 @@ namespace Labb3QuizApp.ViewModel
     {
         private readonly MainWindowViewModel? _mainWindowViewModel;
         private QuestionPackViewModel? _activePack;
-        private LocalDataService _localDataService;
+        string connectionString = ConfigurationManager.AppSettings["MongoConnectionString"];
+        string databaseName = ConfigurationManager.AppSettings["MongoDatabaseName"];
+        private readonly MongoDataService _mongoDataService;
         private bool _isPlayMode;
         private bool _hasQuestions;
         private readonly string appDataFolder;
@@ -88,10 +91,10 @@ namespace Labb3QuizApp.ViewModel
                 }
             }
         }
-        public MenuViewModel(MainWindowViewModel? mainWindowViewModel)
+        public MenuViewModel(MainWindowViewModel? mainWindowViewModel, MongoDataService mongoDataService)
         {
             _mainWindowViewModel = mainWindowViewModel;
-            _localDataService = new LocalDataService(this);
+            _mongoDataService = mongoDataService;
             appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "QuizApp");
             Directory.CreateDirectory(appDataFolder);
             lastActivePackPath = Path.Combine(appDataFolder, "LastActivePack.txt");
@@ -177,7 +180,7 @@ namespace Labb3QuizApp.ViewModel
                         {
                             QuestionPacks.Remove(selectedPack);
                             selectedPack.Questions.Clear();
-                            _localDataService.RemoveQuestionPack(QuestionPacks.Select(p => p.QuestionPack).ToList(), selectedPack.QuestionPack);
+                            _mongoDataService.RemoveQuestionPack(selectedPack.QuestionPack);
                         }
 
                         if (selectedPack == ActivePack)
@@ -207,7 +210,7 @@ namespace Labb3QuizApp.ViewModel
         {
             PackOptionsDialog packOptionsDialog = new();
 
-            var configurationViewModel = new ConfigurationViewModel(_mainWindowViewModel, this, _localDataService);
+            var configurationViewModel = new ConfigurationViewModel(_mainWindowViewModel, this, _mongoDataService);
             packOptionsDialog.DataContext = configurationViewModel;
 
             packOptionsDialog.ShowDialog();
@@ -215,7 +218,7 @@ namespace Labb3QuizApp.ViewModel
 
         private async Task LoadQuestionPacks()
         {
-            var dataService = new LocalDataService(this);
+            var dataService = new MongoDataService(connectionString, databaseName);
 
             var packs = await dataService.LoadQuestionPacks();
 
@@ -234,7 +237,9 @@ namespace Labb3QuizApp.ViewModel
 
         public async Task SaveCurrentPacks()
         {
-            var dataService = new LocalDataService(this);
+
+
+            var dataService = new MongoDataService(connectionString, databaseName);
             var existingPacks = await dataService.LoadQuestionPacks();
 
             var updatedPacks = QuestionPacks.Select(p => p.QuestionPack).ToList();

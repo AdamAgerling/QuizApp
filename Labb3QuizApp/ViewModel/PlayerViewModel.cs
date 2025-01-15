@@ -204,7 +204,7 @@ namespace Labb3QuizApp.ViewModel
         {
             _menuViewModel.IsPlayMode = true;
             IsQuizActive = true;
-
+            QuestionScore = 0;
             if (RandomizedQuestions == null || questions.Count == 0)
             {
                 return;
