@@ -8,9 +8,9 @@
              xmlns:command="clr-namespace:Labb3QuizApp.Command" 
              xmlns:converters="clr-namespace:Labb3QuizApp.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"  Background="#333" Foreground="#FFF">
     <UserControl.Resources>
-        <converters:MultiBoolToIsEnabledConverter x:Key="MultiBoolToIsEnabledConverter"/>
+        <converters:MultiBoolToIsEnabledConverter x:Key="MultiBoolToIsEnabledConverter" />
     </UserControl.Resources>
     <Grid>
         <DockPanel>
@@ -24,6 +24,12 @@
                               Command="{Binding MenuViewModel.OpenCreateNewPack}" 
                               IsEnabled="{Binding MenuViewModel.IsEditMode}"/>
                     <Separator />
+
+                    <MenuItem Header="Handle Categories">
+                        <MenuItem Header="Add New Category" Command="{Binding MenuViewModel.AddCategoryDialogCommand}" />
+                        <MenuItem Header="Update Existing Category" Command="{Binding MenuViewModel.UpdateCategoryDialogCommand}" />
+                        <MenuItem Header="Remove Category" Command="{Binding MenuViewModel.RemoveCategoryDialogCommand}" />
+                    </MenuItem>
 
                     <MenuItem Header="_Select Question Pack" Icon="{fa:Icon folderOpen}" IsEnabled="{Binding MenuViewModel.IsEditMode}">
                         <MenuItem.ItemsSource>
@@ -44,12 +50,6 @@
                               Command="{Binding MenuViewModel.DeleteActivePack}"
                               CommandParameter="{Binding MenuViewModel.ActivePack}"
                               IsEnabled="{Binding MenuViewModel.IsEditMode}"/>
-
-                    <!--<MenuItem Header="_Import Questions" 
-                              Icon="{fa:Icon cloudArrowDown}" 
-                              Command="{Binding MenuViewModel.ImportQuestionsDialog}" 
-                              InputGestureText="Ctrl+I"
-                              IsEnabled="{Binding MenuViewModel.IsEditMode}"/>-->
 
                     <MenuItem Header="E_xit" 
                               Icon="{fa:Icon doorOpen}" 

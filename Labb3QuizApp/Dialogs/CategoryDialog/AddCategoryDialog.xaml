@@ -1,0 +1,29 @@
+﻿<Window x:Class="Labb3QuizApp.Dialogs.CategoryDialog.AddCategoryDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Labb3QuizApp.Dialogs.CategoryDialog"
+        mc:Ignorable="d"
+        Title="Add New Category" Height="150" Width="225" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"  Background="#333" Foreground="#FFF">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="10 10">
+            <TextBlock Text="Category Name:" Margin="1 0 0 2" FontWeight="Bold"/>
+            <TextBox x:Name="CategoryName"  Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}"/>
+
+        </StackPanel>
+        
+        <WrapPanel Margin="0 15" Grid.Row="4" HorizontalAlignment="Center">
+            <Button Content="Cancel" Click="CancelButton_Click" Margin="0 0 30 0" Padding="5 0"/>
+            <Button Content="Add" Click="AddButton_Click" Padding="5 0"/>
+        </WrapPanel>
+    </Grid>
+</Window>

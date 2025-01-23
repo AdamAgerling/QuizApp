@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Labb3QuizApp.Dialogs"
         mc:Ignorable="d"
-        Title="Create New Question Pack" Height="250" Width="225" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Create New Question Pack" Height="300" Width="225" WindowStyle="ToolWindow" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"  Background="#333" Foreground="#FFF">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -24,8 +25,13 @@
             <ComboBox ItemsSource="{Binding SelectDifficulty}" 
                       SelectedItem="{Binding Difficulty}"/>
         </StackPanel>
-        
-        <StackPanel Margin="10 0" Grid.Row="2">
+        <StackPanel Margin="10 0 " Grid.Row="2">
+            <TextBlock Text="Category:" FontWeight="Bold" Margin="0 10 0 5" />
+            <ComboBox ItemsSource="{Binding CategoryViewModel.Categories}" 
+              SelectedItem="{Binding CategoryViewModel.SelectedCategory}" DisplayMemberPath="Name"/>
+        </StackPanel>
+
+        <StackPanel Margin="10 0" Grid.Row="3">
             <WrapPanel>
                 <TextBlock Text="Time Limit:" FontWeight="Bold" Margin="0 10 0 0"/>
                 <TextBlock Text="{Binding TimeLimitInSeconds}" Margin="50 10 0 0" />
@@ -35,7 +41,7 @@
             Value="{Binding TimeLimitInSeconds, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
-        <WrapPanel Margin="0 15" Grid.Row="3" HorizontalAlignment="Center">
+        <WrapPanel Margin="0 15" Grid.Row="4" HorizontalAlignment="Center">
             <Button Content="Cancel" Click="CancelButton_Click" Margin="0 0 30 0" Padding="5 0"/>
             <Button Content="Create" Click="CreateButton_Click" Padding="5 0"/>
         </WrapPanel>

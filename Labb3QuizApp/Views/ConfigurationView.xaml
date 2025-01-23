@@ -7,7 +7,7 @@
              xmlns:local="clr-namespace:Labb3QuizApp.Views" xmlns:converters="clr-namespace:Labb3QuizApp.Converters"
              DataContext="{Binding ConfigurationViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800" Background="#333" Foreground="#FFF">
     <UserControl.Resources>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
     </UserControl.Resources>
@@ -52,7 +52,7 @@
             </Grid>
 
             <!--Edit Question List Panel-->
-            <ListBox Grid.Row="1" Margin="5 0" ItemsSource="{Binding ActivePack.Questions}" SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}">
+            <ListBox Grid.Row="1" Margin="5 0" ItemsSource="{Binding ActivePack.Questions}" SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}"  Background="#333" Foreground="#FFF">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>

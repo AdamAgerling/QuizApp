@@ -1,6 +1,6 @@
 ﻿namespace Labb3QuizApp.Model
 {
-    class Question
+    public class Question
     {
         public string QuizQuestion { get; set; }
         public string CorrectAnswer { get; set; }

@@ -1,5 +1,6 @@
 ﻿using Labb3QuizApp.Command;
 using Labb3QuizApp.Dialogs;
+using Labb3QuizApp.Dialogs.CategoryDialog;
 using Labb3QuizApp.Model;
 using Labb3QuizApp.Services;
 using System.Collections.ObjectModel;
@@ -13,15 +14,20 @@ namespace Labb3QuizApp.ViewModel
     class MenuViewModel : ViewModelBase
     {
         private readonly MainWindowViewModel? _mainWindowViewModel;
+        private CategoryViewModel? _categoryViewModel;
         private QuestionPackViewModel? _activePack;
+        public ObservableCollection<Category> Categories { get; set; } = new ObservableCollection<Category>();
+
         string connectionString = ConfigurationManager.AppSettings["MongoConnectionString"];
         string databaseName = ConfigurationManager.AppSettings["MongoDatabaseName"];
         private readonly MongoDataService _mongoDataService;
+        private readonly MongoDbContext _dbContext;
         private bool _isPlayMode;
         private bool _hasQuestions;
         private readonly string appDataFolder;
         private readonly string lastActivePackPath;
         public bool IsEditMode => !IsPlayMode;
+
 
         public DelegateCommand NavigateToQuiz { get; }
         public DelegateCommand NavigateToConfiguration { get; }
@@ -29,6 +35,9 @@ namespace Labb3QuizApp.ViewModel
         public DelegateCommand OpenPackOptions { get; }
         public DelegateCommand SelectQuestionPack { get; }
         public DelegateCommand DeleteActivePack { get; }
+        public DelegateCommand AddCategoryDialogCommand { get; }
+        public DelegateCommand UpdateCategoryDialogCommand { get; }
+        public DelegateCommand RemoveCategoryDialogCommand { get; }
         public ObservableCollection<QuestionPackViewModel> QuestionPacks { get; set; } = new ObservableCollection<QuestionPackViewModel>();
 
         public QuestionPackViewModel? ActivePack
@@ -78,6 +87,18 @@ namespace Labb3QuizApp.ViewModel
             }
         }
 
+        public CategoryViewModel CategoryViewModel
+        {
+            get
+            {
+                if (_categoryViewModel == null)
+                {
+                    var mongoDataService = new MongoDataService(connectionString, databaseName, "Categories");
+                    _categoryViewModel = new CategoryViewModel(mongoDataService);
+                }
+                return _categoryViewModel;
+            }
+        }
         public bool IsPlayMode
         {
             get => _isPlayMode;
@@ -91,18 +112,25 @@ namespace Labb3QuizApp.ViewModel
                 }
             }
         }
-        public MenuViewModel(MainWindowViewModel? mainWindowViewModel, MongoDataService mongoDataService)
+        public MenuViewModel(MainWindowViewModel? mainWindowViewModel, MongoDataService mongoDataService, CategoryViewModel categoryViewModel)
         {
             _mainWindowViewModel = mainWindowViewModel;
             _mongoDataService = mongoDataService;
+            _categoryViewModel = new CategoryViewModel(mongoDataService);
             appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "QuizApp");
             Directory.CreateDirectory(appDataFolder);
             lastActivePackPath = Path.Combine(appDataFolder, "LastActivePack.txt");
 
+            _dbContext = new MongoDbContext(connectionString, databaseName);
+            LoadCategoriesAsync();
             OpenCreateNewPack = new DelegateCommand(CreateNewPackDialog);
             OpenPackOptions = new DelegateCommand(PackOptionsDialog);
             SelectQuestionPack = new DelegateCommand(SelectPack);
             DeleteActivePack = new DelegateCommand(RemoveActivePack);
+
+            AddCategoryDialogCommand = new DelegateCommand(OpenAddCategoryDialog);
+            UpdateCategoryDialogCommand = new DelegateCommand(OpenUpdateCategoryDialog);
+            RemoveCategoryDialogCommand = new DelegateCommand(OpenRemoveCategoryDialog);
 
 
             NavigateToConfiguration = new DelegateCommand(obj =>
@@ -124,22 +152,84 @@ namespace Labb3QuizApp.ViewModel
             }
         }
 
+        private void OpenAddCategoryDialog(object? obj)
+        {
+            AddCategoryDialog dialog = new();
+            dialog.DataContext = new Category();
+
+            if (dialog.ShowDialog() == true)
+            {
+                var newCategory = dialog.NewCategory;
+                if (newCategory != null)
+                {
+                    _categoryViewModel?.AddCategory(newCategory);
+                }
+            }
+        }
+
+        private void OpenRemoveCategoryDialog(object? obj)
+        {
+            if (_categoryViewModel == null)
+            {
+                Debug.WriteLine("CategoryViewModel is null.");
+                return;
+            }
+
+            var dialog = new RemoveCategoryDialog(_categoryViewModel);
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                MessageBox.Show("Category removed successfully.");
+            }
+        }
+
+        private void OpenUpdateCategoryDialog(object? obj)
+        {
+            var dialog = new UpdateCategoryDialog(_categoryViewModel);
+
+            if (dialog.ShowDialog() == true)
+            {
+                if (_categoryViewModel.SelectedCategory != null)
+                {
+                    _categoryViewModel.UpdateCategory(_categoryViewModel.SelectedCategory);
+                }
+                else
+                {
+                    Debug.WriteLine("No category selected after dialog was closed.");
+                }
+            }
+            else
+            {
+                Debug.WriteLine("Dialog cancelled by user.");
+            }
+        }
+
         private async void CreateNewPackDialog(object? obj)
         {
-            CreateNewPackDialog createNewPackDialog = new();
-            var viewModel = new CreateNewPackDialogViewModel();
-            createNewPackDialog.DataContext = viewModel;
+            var dialog = new CreateNewPackDialog(CategoryViewModel, _dbContext, _activePack);
 
-            if (createNewPackDialog.DataContext is CreateNewPackDialogViewModel dialogViewModel &&
-             createNewPackDialog.ShowDialog() == true)
+            if (dialog.ShowDialog() == true)
             {
-
-                var newPack = new QuestionPack(viewModel.PackName, viewModel.Difficulty);
-                var newPackViewModel = new QuestionPackViewModel(newPack);
-                QuestionPacks.Add(newPackViewModel);
-                ActivePack = newPackViewModel;
+                var viewModel = (CreateNewPackDialogViewModel)dialog.DataContext;
+                var newPack = new QuestionPack(
+                    viewModel.PackName,
+                    viewModel.Difficulty,
+                    viewModel.TimeLimitInSeconds
+                );
                 await SaveCurrentPacks();
-                SelectPack(newPackViewModel);
+                QuestionPacks.Add(new QuestionPackViewModel(newPack, Categories));
+            }
+        }
+
+        private async Task LoadCategoriesAsync()
+        {
+            var categories = await _mongoDataService.GetCategories();
+            Categories.Clear();
+            foreach (var category in categories)
+            {
+                Categories.Add(category);
             }
         }
 
@@ -204,11 +294,11 @@ namespace Labb3QuizApp.ViewModel
         private QuestionPackViewModel CreateDefaultPack()
         {
             var defaultPack = new QuestionPack("Default Pack", Difficulty.Easy, 30);
-            return new QuestionPackViewModel(defaultPack);
+            return new QuestionPackViewModel(defaultPack, Categories);
         }
         private void PackOptionsDialog(object? obj)
         {
-            PackOptionsDialog packOptionsDialog = new();
+            PackOptionsDialog packOptionsDialog = new(_categoryViewModel, _activePack);
 
             var configurationViewModel = new ConfigurationViewModel(_mainWindowViewModel, this, _mongoDataService);
             packOptionsDialog.DataContext = configurationViewModel;
@@ -218,13 +308,13 @@ namespace Labb3QuizApp.ViewModel
 
         private async Task LoadQuestionPacks()
         {
-            var dataService = new MongoDataService(connectionString, databaseName);
+            var dataService = new MongoDataService(connectionString, databaseName, "QuestionPacks");
 
             var packs = await dataService.LoadQuestionPacks();
 
             foreach (var pack in packs)
             {
-                var packViewModel = new QuestionPackViewModel(pack);
+                var packViewModel = new QuestionPackViewModel(pack, Categories);
                 QuestionPacks.Add(packViewModel);
             }
 
@@ -237,22 +327,40 @@ namespace Labb3QuizApp.ViewModel
 
         public async Task SaveCurrentPacks()
         {
+            Debug.WriteLine("Starting SaveCurrentPacks...");
 
-
-            var dataService = new MongoDataService(connectionString, databaseName);
+            var dataService = new MongoDataService(connectionString, databaseName, "QuestionPacks");
             var existingPacks = await dataService.LoadQuestionPacks();
 
+            if (existingPacks == null)
+            {
+                Debug.WriteLine("No existing packs found. Initializing a new list.");
+                existingPacks = new List<QuestionPack>();
+            }
+
             var updatedPacks = QuestionPacks.Select(p => p.QuestionPack).ToList();
+
             foreach (var updatedPack in updatedPacks)
             {
                 var existingPack = existingPacks.FirstOrDefault(p => p.Name == updatedPack.Name);
+
                 if (existingPack != null)
                 {
+                    Debug.WriteLine($"Updating existing pack with Name: {existingPack.Name}");
                     existingPacks.Remove(existingPack);
                 }
+                else
+                {
+                    Debug.WriteLine($"Adding new pack: {updatedPack.Name}");
+                }
+
                 existingPacks.Add(updatedPack);
+
+                Debug.WriteLine($"Pack Name: {updatedPack.Name}, Question count: {updatedPack.Questions.Count}");
             }
-            await dataService.SaveQuestionPacks(existingPacks);
+
+            await dataService.SaveMultipleQuestionPacks(existingPacks);
+            Debug.WriteLine("Finished saving packs.");
         }
 
         public async Task StoreLastActivePack()

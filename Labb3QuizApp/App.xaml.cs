@@ -1,22 +1,29 @@
-﻿using Labb3QuizApp.ViewModel;
+﻿using Labb3QuizApp.Services;
+using Labb3QuizApp.ViewModel;
+using System.Configuration;
 using System.Windows;
 
 namespace Labb3QuizApp
 {
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
+        string connectionString = ConfigurationManager.AppSettings["MongoConnectionString"];
+        string databaseName = ConfigurationManager.AppSettings["MongoDatabaseName"];
+
+        protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
             MainWindow = new MainWindow();
             MainWindow.Show();
+            var mongoDataService = new MongoDataService(connectionString, databaseName, "QuestionPacks");
+            await mongoDataService.SetupDefaultCategories();
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        async protected override void OnExit(ExitEventArgs e)
         {
             if (MainWindow?.DataContext is MainWindowViewModel mainViewModel)
             {
-                mainViewModel.MenuViewModel.StoreLastActivePack();
+                await mainViewModel.MenuViewModel.StoreLastActivePack();
             }
             base.OnExit(e);
         }

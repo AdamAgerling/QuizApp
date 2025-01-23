@@ -9,9 +9,9 @@ namespace Labb3QuizApp.ViewModel
     {
         private QuestionPackViewModel? _activePack;
         private readonly MongoDataService _mongoDataService;
+        private CategoryViewModel _categoryViewodel;
 
         public MenuViewModel MenuViewModel { get; }
-
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; set; }
 
@@ -69,12 +69,13 @@ namespace Labb3QuizApp.ViewModel
             string connectionString = ConfigurationManager.AppSettings["MongoConnectionString"];
             string databaseName = ConfigurationManager.AppSettings["MongoDatabaseName"];
 
-            _mongoDataService = new MongoDataService(connectionString, databaseName);
+            _mongoDataService = new MongoDataService(connectionString, databaseName, "QuestionPacks");
 
-            MenuViewModel = new MenuViewModel(this, _mongoDataService);
+            MenuViewModel = new MenuViewModel(this, _mongoDataService, _categoryViewodel);
             Application.Current.Exit += (s, e) => MenuViewModel.StoreLastActivePack();
 
             ConfigurationViewModel = new ConfigurationViewModel(this, MenuViewModel, _mongoDataService);
+            _ = ConfigurationViewModel.InitializeAsync();
             PlayerViewModel = new PlayerViewModel(this, MenuViewModel);
 
             ShowConfigurationView = new DelegateCommand(ShowConfigurationViewHandler);
@@ -89,7 +90,6 @@ namespace Labb3QuizApp.ViewModel
             {
                 return;
             }
-
             PlayerViewVisibility = Visibility.Visible;
             ConfigurationVisibility = Visibility.Hidden;
             PlayerViewModel.StartQuiz(ActivePack.Questions, ActivePack.TimeLimitInSeconds);
